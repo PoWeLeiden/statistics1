@@ -1,0 +1,43 @@
+# Preface {.unnumbered}
+
+This book presents the R materials related to the course *Statistics I*.
+
+We have divided the book into two parts:
+
+1.  **Working with data in R**. This parts focuses on using R and Rstudio, on reading data into R and modifying it using R functions.
+
+2.  **Statistical analysis in R**. This part focuses on conducting statistical analyses in R.
+
+This part also provides general guidelines on how to present and correctly report the output from statistical analyses. For different tests or measures of association, you will find the output from the statistical software as well as additional information:
+
+::: callout-note
+#### Output explanation
+
+This box contains information on the output.
+:::
+
+::: callout-warning
+#### Interpretation
+
+This box contains general guidelines for the interpretation of the results, e.g. different 'rule-of-thumb' for the interpretation of effect sizes.
+:::
+
+::: callout-tip
+#### Report
+
+✓ This box shows the general format of how you should report the result of your analysis
+:::
+
+## Overview per week
+
+For each week in the course, you need to read relevant chapters in both sections. In 2023-2024 this is:
+
+| Week | Working with data in R                         | Statistical analysis in R                                                          |
+|-----------------|---------------------|----------------------------------|
+| 1    | @sec-data-basics, paragraph 1 to 7             | @sec-analysis-descriptives                                                         |
+| 2    | @sec-data-basics, paragraph 8                  | @sec-analysis-graphs, @sec-analysis-tables and @sec-analysis-probability           |
+| 3    | @sec-data-filtering-selecting                  | @sec-analysis-normal-distribution and @sec-analysis-proportions, paragraph 1 and 2 |
+| 4    | @sec-data-variables and @sec-data-missing-data | @sec-analysis-proportions                                                          |
+| 5    | @sec-data-advanced-recoding                    | @sec-analysis-chi-squared                                                          |
+| 6    | \-                                             | @sec-analysis-t-test                                                               |
+| 7    | @sec-data-merging-data                         | @sec-analysis-power-analysis and @sec-analysis-anova                               |

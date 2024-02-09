@@ -1,0 +1,3 @@
+# Statistical analysis in R
+
+In this part, we discuss the R code necessary for running various types of statistical analysis discussed in the course.

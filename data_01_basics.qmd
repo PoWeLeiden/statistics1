@@ -1,0 +1,616 @@
+# Working with R and RStudio: the basics {#sec-data-basics}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+#install.packages("kableExtra")
+library(kableExtra)
+```
+
+When you open RStudio, you will see four windows (also called panes). You can change the order of the windows under View \> Panes. You can also change their shape by clicking the minimize or maximize buttons on the top right of each panel. For this course it is best if you leave all panes at their original location.
+
+1.  The source pane is where you create and edit RScripts (more on this below).
+
+2.  Environment/History pane: Here R shows you the names of all the data objects (like vectors, matrices, and dataframes) that you opened in your current R session and shows you information like the number of observations and rows in data objects. The History tab shows you a history of all the code that was evaluated in the Console.
+
+3.  The console is where R actually evaluates code. At the beginning of the console you will see the character '\>'. You can type code directly into the console and get an immediate response. For example, if you type 1+1 into the console and press ENTER, R immediately gives an output of 2.
+
+4.  The Files / Plots / Packages / Help panel shows a lot of helpful information.
+
+-   Files - The files panel gives you access to the file directory on your hard drive.
+-   Plots - The Plots panel shows all your plots.
+-   Packages - Shows which R packages are installed on your computer (see more below)
+-   Help - Shows the help information for R functions.
+
+![Overview of RStudio](figures/overview_r_functions_week1_RStudio_Screenshot_Labels.png)
+
+## Interacting with the console: Using R as a calculator
+
+R can be used as a powerful calculator. You can simply enter equations directly at the prompt in the command console (the window with the `>` symbol). Simply type your arithmetic expression and press ENTER on Windows keyboards and RETURN on Mac keyboards. R will evaluate the expressions and respond with the result.
+
+For simple arithmetic expressions, the operators R uses are:
+
+```{r eval=FALSE, include=TRUE}
++    Addition
+-    Subtraction
+*    Multiplication
+/    Division
+^    Exponentiation
+```
+
+### Using parentheses
+
+If you want to add 6 and 3, then multiply the result by 2, you need to add parentheses. This imposes an order for the calculation of the result (i.e. first add 6 and 3 and then divide by 2). In the case of this example, you could enter
+
+```{r, include=TRUE}
+(6 + 3) * 2
+```
+
+This will return the result 18.
+
+### More complex equations
+
+You can write more complex expressions that use parentheses and operators.
+
+The order of operations can be remembered by the acronym PEMDAS, which stands for: parentheses, exponents, multiplication and division from left to right, and addition and subtraction from left to right. Take the following equation:
+
+$$
+\frac{18 * 4^2 - (4+2)}{3}
+$$
+
+You enter this in the RStudio command console as follows:
+
+```{r, include=TRUE}
+(18*4^2-(5+4))/3
+```
+
+Notice how you can control the order of evaluation by using parentheses.
+
+1.  Internally, R first calculates `18*4^2` (`= 288`). It follows the rules outlined above (PEMDAS), so there is no need to put a parenthesis around `4^2`. Exponents are calculated before multiplication so we do not need to specify this via a parenthesis.
+2.  From this we subtract `5+4` (`288-9 = 279`).
+3.  Finally, we divide by 3.
+
+This returns:
+
+```{r eval=FALSE, include=TRUE}
+[1] 93
+```
+
+## 'base' R and additional packages
+
+When you download R from the Comprehensive R Archive Network (CRAN), you get the 'base' R system. This software contains basic functionality and implements the R language. However, one of the reasons why R is so useful is the large collection of additional packages that extend the basic functionality of R. R packages are developed and published by the larger R community. There are thousands of packages available covering a wide range of topics.
+
+The primary location for obtaining R packages is CRAN. There are some additional locations but you do not have to worry about this for now.
+
+### Installing and loading an R Package
+
+To install a package, you use the `install.packages()` function and then write the name of the package. You must include quotation marks around the name of the package, i.e. `install.packages("<the package's name>")`. For example, if you want to install the package 'rio' (an R package which makes data import and export in R very quick), you write:
+
+```{r eval = FALSE, include=TRUE}
+install.packages("rio")
+```
+
+R will automatically install everything it needs. Once you have installed a package, it remains on your laptop. Therefore, installing an R package only needs to be done once (until you install R again).
+
+> **Please note: Packages that are needed for this course are pre-installed on all PCs at Leiden University. Therefore, this step can be skipped when you work on PCs at the university and you can simply load them (see next step). If you use your own laptop, you must first install the package.**
+
+Installing a package does not make it immediately available to you in R. Before you can use the package and the functions that come with it, you must load it into R. To load packages into R, the `library()` function is used. When loading a package, you do not use quotation marks. To load the 'rio' package into R, you would write:
+
+```{r, include=TRUE}
+library(rio)
+```
+
+If you try and load a package that is not installed, you get an error ('`Error in library(rio) : there is no package called 'rio'`').
+
+## R scripts
+
+The console window (in RStudio, the bottom left panel) is the place where you can type commands directly into the console, but they will be forgotten when you close the session.
+
+Often, we do not simply want to work in the console but we want to keep our commands and save them. A common way to do this is to work in an R script. This is a text file that contains all commands that you would enter on the command line of R. This keeps everything nicely organized.
+
+It is easy to create a new script in RStudio. We can use the menu ("File" → "New File" → "R Script") or with the keyboard shortcut "Command+Shift+N" on a Mac or "Ctrl+Shift+N" on Windows and Linux. Afterwards, the editor appears as a new pane in the top left of the RStudio window.
+
+You can write all commands that are needed for your project. For example, we could write these three lines:
+
+```{r eval=FALSE, include=TRUE}
+print("This is my first R script")
+1+1
+17-8*2
+```
+
+### Annotating R scripts
+
+You can add comments by annotating the R Script. Annotating it will make it much easier for yourself or people you collaborate with. You can use the symbol `#` to start an annotation. When you run a command, R will ignore everything after this symbol. Going back to my earlier example, assume you want to add a comment after the formula then you can write:
+
+```{r eval=FALSE, include=TRUE}
+(18*4^2-(5+4))/3 #This is a nice formula.
+```
+
+### Executing code in R scripts
+
+To run a command in an R script, you have several options:
+
+1.  Put the cursor on the line of the command and then click the 'Run' button at the top of the file window.
+2.  Put the cursor on the line of the command and press CTRL + ENTER on Windows PCs or COMMAND + ENTER on Mac.
+3.  You can also select the whole line and press 'Run' or CTRL + ENTER). Note that if you do this you have to select the whole line. Otherwise, R will only execute the part of the command that you have highlighted.
+
+![RMarkdown Visual Mode 1](figures/overview_r_functions_week1_marked_code.png)
+
+After you pressed 'Run' or CTRL + ENTER, R will execute the command.
+
+If you have added an annotation (see above), R but will exclude the text behind `#`.
+
+You can run of course run multiple lines. For example, if your R Script contains these three commands:
+
+```{r eval=FALSE, include=TRUE}
+print("This is my first R script")
+1+1
+17-8*2
+```
+
+You can select everything that you want to execute (i.e. the whole text or the first two lines, etc.) with your mouse cursor and then click the 'Run' button at the top of the file window or press CTRL + ENTER on Windows PCs or COMMAND + ENTER on Mac.
+
+### Saving / Opening an existing R script
+
+You can save your script by clicking on File \> "Save as..." or by clicking the Save icon at the top of the Script Editor panel. When you do that, a Save File option menu will open. Give the R script an informative name, so you can find it when you want to open it later. You can open an existing R script via File \> "Open file..."
+
+## R Markdown file
+
+Another common format is the R Markdown file. An R Markdown document is written in an easy-to-write plain text format and contains chunks of embedded R code. The great thing about R Markdown is that you can include code chunks (and in-line code) to report output and statistical analysis.
+
+Once you export it, you can turn your text into high quality documents, reports, presentations and dashboards. This document, for example, is an R Markdown file.
+
+> RStudio will automatically install the required `rmarkdown` package and load it when necessary.
+
+### Editing R Markdown files
+
+For now, you do not have to know how to create R Markdown files. However, we will use them throughout the course for exercises and assignments so you need to know how to work in them.
+
+R Markdown files have the .Rmd extension. Once you click on them, R Studio should open them. If it does not, you can open them via "File" → "Open File". When you first open them, they will look like an R Script (with some colored code). It is easier to work in them using the 'Visual' mode. On Windows PCs you can switch to this mode via 'CTRL + SHIFT + F4'. On Apple Macs you can switch to this mode via 'COMMAND ⌘ + SHIFT + F4'. You can also click on the button 'Visual'.
+
+![RMarkdown Visual Mode 1](figures/overview_r_functions_week1_001.png)
+
+To execute code, you can select the code and press 'CTRL + ENTER' or, alternatively, click on the little green arrow.
+
+![RMarkdown Visual Mode 2](figures/overview_r_functions_week1_002.png)
+
+You can also change the code and add new code in the field.
+
+![RMarkdown Visual Mode 3](figures/overview_r_functions_week1_003.png)
+
+Once you execute the code, R will display the results.
+
+### 'Knitting' an R Markdown file
+
+You can transform your markdown file into an HTML, PDF, or Word document that you can upload on Brightspace. To do this, click the **Knit** icon that appears above your file in the scripts editor. After this, a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+![Knit button](figures/overview_r_functions_week1_screenshot_knit_button.png)
+
+You can save your .Rmd file with "File" → "Save File As...".
+
+## Setting up an R Project
+
+When you work with R, you will likely have several files related to what you are working on: a file with the data set, a file with your R script (or R Markdown file) and perhaps some output that you save. To keep track of all the files related to a project, we recommend setting up an R Project.
+
+1.  Click "File" → "New Project"
+
+2.  Click "New directory" and then "New Project"
+
+3.  Enter your project name under 'Directory name' and specify in which folder the project will be located by clicking 'Browse' and selecting a folder. Then click 'Create Project'
+
+![Setting up a Project in RStudio](figures/overview_r_functions_week1_screenshot_new_project.png)
+
+R will now create the project and open the folder in the Files view at the bottom of the project.
+
+**Set up a Project for this course, and save all assignment, exercises and data files for this course in the project folder/directory.**
+
+Using File → Open Project you can open an existing project and continue working on it.
+
+## Manually entering data into R
+
+In R, the main and most used way to enter data is the left-arrow operator (`<-`). This assignment operator is used to **assign** a value.
+
+The combination `object <- content` means "assign the value of the result from the operation on the right hand side ('content') to the object on the left hand side ('object')".
+
+R can also deal with other assignment operators but my suggestion is to stick with the `<-` operator. This is the most conventional assignment operator used and is what you will find in all the base R source code.
+
+### Storing data in an object
+
+R can deal with many different input forms (text, numbers, dates, etc,). You can determine the types of data that will be stored in the object. Let us assume, I want to assign the numeric value 12 to an object called 'my_first_variable'.
+
+We create an object called 'my_first_variable' (note that you cannot have a space in the name) and assign one value (12) to it. To do this in R we use the symbols `<-`. You write it like this:
+
+```{r, include=TRUE}
+my_first_variable <- 12
+```
+
+If you then call 'my_first_variable' by selecting the text with our mouse cursor and pressing CTRL + ENTER then R will display the content of the object.
+
+```{r, include=TRUE}
+my_first_variable 
+```
+
+If we check the data type via `class()`, we can see that this is a 'numeric' object. This is used if the values are numbers or if the values contain decimals.
+
+```{r, include=TRUE}
+class(my_first_variable)
+```
+
+At this point, it is maybe good to note that R is a **case sensitive** programming language. Meaning all variables, functions, and objects must be called by their exact spelling. If you try and call the object 'my_first_variable' by writing 'My_first_variable' (note the capital 'M'), R will not be able to find it.
+
+Of course, we can also enter decimal numerals. You must use a 'dot' as decimal separator for this:
+
+```{r, include=TRUE}
+my_second_variable <- 6.521
+my_second_variable 
+```
+
+When we inspect this object we can see that it is again a 'numeric' object.
+
+```{r, include=TRUE}
+class(my_second_variable)
+```
+
+We can also store text. In R, text is termed as a 'string'. A string is a piece of text that is represented as a sequence of characters (letters, numbers, and symbols). It can be made of one character or contains a collection of characters. Any value written within a pair of single quote or double quotes in R is treated as a string. It is more common to use doubles quotes ("") than single quotes ('') around the text. This will create a 'character' variable.
+
+```{r, include=TRUE}
+a_text_variable <- "Hello, world"
+```
+
+```{r, include=TRUE}
+a_text_variable
+```
+
+As explained above, you can use double quotation marks or single quotation marks. While this will lead to the same outcome, I would recommend that you stick with double quotation marks.
+
+```{r, include=TRUE}
+a_text_variable <- 'Hello, world'
+a_text_variable
+```
+
+### Creating a vector
+
+So far, our object only contains one value. If we want to store different values then we must create a vector. Vectors are essential objects in R. They are the building block for data frames which we will cover later. Let us create a numeric vector which contains all numbers from 1 to 5 and the value 8.5. To do this we use `c()` to indicate that a list of values is followed. The 'c' in`c()` stands for combine.
+
+```{r, include=TRUE}
+my_first_vector <- c(1, 2, 3, 4, 5, 8.5)
+my_first_vector
+```
+
+If we check the data type via `class()`, we can see that this is a 'numeric' object. This is used if the values are numbers or if the values contain decimals.
+
+```{r, include=TRUE}
+class(my_first_vector)
+```
+
+We can also create a vector with text instead of numbers.
+
+```{r, include=TRUE}
+color_vector <- c("blue", "red", "green", "white", "black", "yellow")
+color_vector
+```
+
+As was stated above, R uses the data type 'character' when storing text. If we check the data type via `class()`, we can see that this is a 'character' object.
+
+```{r, include=TRUE}
+class(color_vector)
+```
+
+Can we mix numbers and text? No. Vectors are limited to 1 type of data (i.e. you can store numbers or strings but not both). What happens if we mix numbers and strings?
+
+```{r, include=TRUE}
+mixed_vector <- c(1, "red", 3, "white", "black", 6)
+```
+
+R creates the vector as instructed but automatically makes this a 'character' vector (see the double quotation marks when we call the vector and the ouput from `class(mixed_vector)`):
+
+```{r, include=TRUE}
+mixed_vector
+class(mixed_vector)
+```
+
+### Creating variables in R
+
+Now that we know how to store data, we can use it to build categorical and continuous variables.
+
+#### Categorical data: Factors
+
+For categorical data (nominal and ordinal data), we use a factor. Factors are used to categorize the data and store it as levels. They can store both characters and numbers (integers, decimals).
+
+##### Nominal data
+
+Suppose we have a nominal variable with directions. First we create a vector as input.
+
+```{r, include=TRUE}
+data <- c("East", "West", "East", "North", "North", "East", "West", "West", "West", "East", "North")
+```
+
+So far, this simply a sequence of strings. If we call the object 'data' then we get:
+
+```{r, include=TRUE}
+data
+```
+
+To inform R that this is a categorical variable we must specify that it is a factor. We can do this by adding `factor()` around the expression:
+
+```{r, include=TRUE}
+directions <- factor(c("East", "West", "East", "North", "North", "East", "West", "West", "West", "East", "North"))
+```
+
+Internally, R stores these factors as integers (=whole numbers), and uses the strings as labels. If we call the object 'directions' now we get:
+
+```{r, include=TRUE}
+directions
+```
+
+As you can see, R treats this now as as categorical (nominal) variable.
+
+We can also get more information on the unique values of our factor by using `levels()`:
+
+```{r, include=TRUE}
+levels(directions)
+```
+
+Using strings for factors is preferred because we can use the labels for information. It is of course possible to use integers, i.e. 1 for 'North' 2 for 'East', 3 for 'South' and 4 for 'West'. However, this can make it difficult to know what the numbers mean without checking which labels they represent. Therefore, I would advice you to use strings when you create your own factors.
+
+##### Ordinal factor levels in R
+
+The previous example used a nominal variable (i.e. no clear ordering of the categories). Ordinal variables, on the other hand, have clear ordering of the categories. This could be values such as low, medium, and high. To do this, we create factors with inherent ordering of the categories by adding `levels = c(), ordered = TRUE`. For example, we can create a factor with temperature using "low", "medium", "high".
+
+```{r, include=TRUE}
+temperature <- factor(c("low", "high", "medium", "high", "low", "medium", "high"), levels = c("low", "medium", "high"), ordered = TRUE)
+```
+
+```{r, include=TRUE}
+temperature
+```
+
+#### Interval / ratio variables
+
+Interval/ratio data can be coded as variables with numbers (whole numbers or decimals). To create a continuous variable, we can simply create a vector with integers or decimals:
+
+```{r, include=TRUE}
+exam_points <- c(2, 7, 3, 4, 2, 0)
+```
+
+## Data frames
+
+Arguably one of the powerful and widely used data structures in R are data frames. Data frames have two dimensions and consist of multiple **variables**, one in each **column**. Each **row** represents **one case** about which we have information. This is a very simple example of a data frame:
+
+```{r echo=FALSE}
+stud_id = c(1, 2, 3, 4, 5)
+stud_name = c("Arnold", "Dan", "Ina", "George","Sophie")
+grade = c(6.5, 5.5, 7, 9, 8.5)
+student.data <- data.frame(stud_id, stud_name, grade, 
+           stringsAsFactors = TRUE)
+student.data
+```
+
+This example data frame has information about five students (one per row). It contains three variables: Student ID (stud_id), their name (stud_name) and their grade (grade). So we have three columns.
+
+It is possible to create a data frame by manually entering data, normally we will load a data frame from a file.
+
+> You may encounter the term `tibble` later on, which is essentially the same thing as a data frame.
+
+#### Viewing the data in RStudio
+
+Once you have entered or loaded data, R studio displays this in the 'Environment pane' on the right. You can click the data frame name (`student.data` in our example) to inspect the data in a separate window.
+
+![The Environment pane](figures/overview_r_functions_week1_screenshot_environment.png)
+
+#### Creating data frames from vectors
+
+You can use the `data.frame()` function to combine individual vectors into a single data frame. This will combine your vectors into a single data frames: each vector will be in a separate **column**. Each **row** represents **one case** about which we have information. Below I create three vectors: one about the day of the week, one about the temperature of that day and a factor variable about the type of weather. Then I combine them into a data frame called 'weather'. Note that we use `factor()` for the factor variable.
+
+```{r include=TRUE}
+day = c("Monday", "Tuesday", "Wednesday", "Thursday","Friday")
+temp = c(7, 5, 7, 8, 8)
+type <- factor(c("cloudy", "showers", "rainy", "cloudy", "rainy"))
+weather <- data.frame(day, temp, type)
+
+str(weather)
+weather
+```
+
+`weather <- data.frame(day, temp, type)`
+
+:   This creates a new data frame called 'weather' which combines the three vectors 'day', 'temp' and 'type'. Replace the names of the data frame and the vectors by the name of your data.
+
+`str(weather)`
+
+:   This part of the code display the internal structure of the data frame.
+
+### Inspecting the data
+
+#### The \$ operator
+
+The 'dollar sign' operator (\$) is incredibly important when we work with data frames. First, it can be used to ***access*** variables in data frames. For example, we can look at the variable 'grade' by writing:
+
+```{r, include=TRUE}
+student.data$grade
+```
+
+You can also ***create*** new variables. For this, we use the operator '\<-'. Let us create a new variable in our 'weather' data frame which is a numeric variable about the humidity on that day.
+
+```{r, include=TRUE}
+weather$humidity <- c(71, 84, 89, 76, 85) 
+weather
+```
+
+Make sure that the number of observations of the new vectors is the same as the number of observations in the data frame. For example, below I try to add another variable about the wind speed. However, because this variable only has 4 observations, R will give an error:
+
+```{r, include=TRUE, error = TRUE}
+weather$wind <- c(27, 14, 21, 18) #this vector has only 4 observations
+```
+
+#### head() and tail()
+
+If you have a data frame with many observations, it can be helpful to print only the first few rows. Our example data set is small, but we can still use it to illustrate the use of the two functions:
+
+```{r}
+head(student.data)
+head(student.data, n = 3)
+tail(student.data, n = 3)
+```
+
+`head(student.data)`
+
+:   This displays the first five rows of a data frame. Replace `student.data` by the name of the appropriate data frame.
+
+`head(student.data, n = 3)`
+
+:   If we specify n = ... We can specify how many rows of data we would like to display, in this example 3 rows.
+
+`tail(student.data, n = 3)`
+
+:   Tail displays the last *n* rows of data. If you leave out n = ... it will display the last 5 rows of data.
+
+### Loading data into R
+
+You can import data into R for analysis and data manipulation (changing variable names, selecting cases, recoding the values of variables, etc.).
+
+Using the `import` function from package [rio](https://cran.r-project.org/web/packages/rio/index.html), we can import various file formats into R, including Microsoft Excel files, CSV files, SPSS, Stata or R files:
+
+Suppose we want to open a comma-separated values (CSV) file. A .csv file is the most used file format for data storing. Our example file is called 'deniro.csv' (available [here)](https://people.sc.fsu.edu/~jburkardt/data/csv/deniro.csv) which contains Rotten Tomato ratings of movies with Robert De Niro. There are 87 records. Each record has Year, Rating, Title.
+
+> Make sure to save the file to your project folder, because that is where R will look for the file when you open it.
+
+You can import this data set in R using the following code:
+
+```{r}
+#| eval: false
+library(rio) 
+deniro_data <- import("deniro.csv") 
+```
+
+```{r}
+#| echo: false
+library(rio)
+deniro_data <- import("data/deniro.csv") 
+```
+
+`library(rio)`
+
+:   This loads the package 'rio' into R. You only need to do this once at the start of your R session.
+
+`import("deniro.csv")`
+
+:   `import()` is a function in the rio package that allows you to import files in almost any format. The function `import()` infers the file format from the file's extension and calls the appropriate data import function for you, returning a simple data.frame
+
+    In this example we load a file called `deniro.csv` and save it to a data frame called `deniro_data`. You can specify any name you would like for a data frame.
+
+> Importantly, if you include only a file name (here: deniro.csv), R will assume this file is located in your **current working directory**. If you are working in an R Project, this working directory is the same as your project folder.
+
+We can now display the contents of this data frame:
+
+```{r}
+print(deniro_data)
+```
+
+### Exporting a data frame
+
+To save a data frame, we use the `export()` function. I will use it save our data frame with student scores from earlier:
+
+```{r, include=TRUE}
+#| eval: false
+export(student.data, "student_scores.csv")
+```
+
+`export(student.data, "student_scores.csv")`
+
+:   `export()` is a function in the rio package that allows you to save files in different formats. In the bracket you specify the name of the data frame, followed by the name you wish to give it and the file extension (in this case a csv file).
+
+'rio' also supports the export into the native format of R which uses the .rds extension. To do this, we simply write:
+
+```{r, include=TRUE}
+#| eval: false
+export(student.data, "student_scores.rds")
+```
+
+After this, we can simply import it again in the same way we did earlier:
+
+```{r}
+#| echo: false
+student_scores <- student.data
+```
+
+
+```{r, include=TRUE}
+#| eval: false
+student_scores <- import("student_scores.rds")
+```
+
+```{r}
+student_scores
+```
+
+
+
+## The pipe operator
+
+In statistical analysis we often perform multiple operations on a data set or single variable. The pipe operator `|>` is used to write cleaner code.
+
+The pipe operator basically takes whatever is at its left hand side and inputs it as the first parameter at its right hand side. For example, if we have a vector x:
+
+```{r}
+x = c(1,2,3,4,5)
+```
+
+You know that we can calculate the mean of x as follows:
+
+```{r}
+mean(x)
+```
+
+We can also use the pipe operator to perform this operation:
+
+```{r}
+x |> mean()
+```
+
+You can read this code as 'take *x* and put it as the first argument of the function mean'.
+
+This example is of course trivial (and normally you would simply use `mean(x)`), but the nice thing about the pipe operator is that we can perform multiple operations in sequence, for example:
+
+```{r}
+x |> 
+  sqrt() |> 
+  mean()
+```
+
+In this example we take x, calculate the square root for each element of x and then take the mean of this. It is the same as writing `mean(sqrt(x))` . The pipe is a cleaner way to write code, particularly if you have many subsequent steps in the pipe. Note that for clarity we usually write the different parts of the pipe on different lines.
+
+### Annotating the pipe
+
+If you want to include annotations in the pipe, put them **after** the pipe, like this:
+
+```{r}
+x |>
+  sqrt() |>  # This calculates the square root
+  mean()     # This calculates the mean
+```
+
+If you put them before the pipe, R thinks the pipe is part of the comment and will display an error[^data_week1-1]:
+
+[^data_week1-1]: R does not process the pipe operator after sqrt() because it is after the hashtag (#) and thus part of the comment. As a result, R runs the code `x |> sqrt()` and displays the result. Then it continues to the line `mean()` and throws an error, because there are no arguments to the function.
+
+```{r, eval = FALSE, error=TRUE}
+x |> 
+  sqrt()  #  This is NOT the way to do it |>  
+  mean()
+```
+
+If you run this code, the output is:
+
+```{r, eval = FALSE, error=TRUE}
+## Error in mean.default(): argument "x" is missing, with no default
+```
+
+### Pipes and dataframes
+
+We can also use the pipe operator for data frames. Next week we will learn about several useful functions in the `dplyr` package that will allow us to create new variables, filter data or select variables. This week we will not actively use the pipe a lot, but we will encounter some code that makes use of it. Now you know it [simply means](https://r4ds.hadley.nz/) that we take the thing on the left and pass it along to the function on the right.
+
+> You may encounter `%>%` in code written by others. This is also a pipe operator, which for our purposes works in the same way as `|>`.

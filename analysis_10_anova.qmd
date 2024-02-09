@@ -1,0 +1,215 @@
+# ANOVA {#sec-analysis-anova}
+
+To illustrate the use of ANOVA we compare mean left-right self placement (`pes19_lr_self_1`) in Canadian provinces (`pes19_province`). This uses data from the 2019 Canadian Election Study:
+
+```{r, eval=FALSE}
+# Loading the data sets
+library(rio)
+canada <- import("2019 Canadian Election Study.rds")
+```
+
+```{r}
+#| echo: false
+library(rio)
+canada <- import("data/2019 Canadian Election Study.rds")
+```
+
+
+First, we produce a plot of the mean estimates with 95% confidence intervals to get an idea of the data:
+
+```{r}
+library(tidyverse) # Load tidyverse for ggplot2
+
+ggplot(data = canada |> filter(!is.na(pes19_province)),
+       mapping = aes(x = pes19_lr_self_1, y = pes19_province)) +
+  stat_summary(fun.data = "mean_se", geom = "point") +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar") 
+```
+
+`ggplot(…)`
+
+:   This is the function to produce a graph.
+
+`data = canada |> filter(!is.na(pes19_province))`
+
+:   We specify the data set used: `canada`. But we also specify what we want to filter this data frame, so that only cases with non-missing values for the variable `pes19_province` remain.
+
+`mapping = aes(x = pes19_lr_self_1, y = pes19_province))`
+
+:   This code links two variables from the data set to the x and y axis respectively.
+
+`stat_summary(fun.data = "mean_se", geom = "point"))`
+
+:   The function `stat_summary` offers a quick way to calculate mean for each group (`fun.data = "mean_se"`) and plot this in our graph as a point (`geom = "point"`).
+
+`stat_summary(fun.data = "mean_cl_normal", geom = "errorbar")`
+
+:   The function `stat_summary` is again used, but now to calculate a confidence interval for the mean (`fun.data = "mean_cl_normal"`), which is then displayed as an error bar in the graph (`geom = "errorbar"`).
+
+We can calculate the one-way ANOVA using function `aov` from package `stats` (which is one of the few packages that R loads automatically on startup):
+
+```{r, eval = FALSE}
+anova_out <- aov(formula = pes19_lr_self_1 ~ pes19_province, 
+                 data = canada)
+summary(anova_out)
+```
+
+`anova_out <- aov()`
+
+:   The `aov` function calculates the ANOVA. We assign the results to object `anova_out` (you can choose any valid name that you like).
+
+`formula = pes19_lr_self_1 ~ pes19_province`
+
+:   This specifies the formula to be used in the format `<interval-ratio variable> ~ <categorical variable>` . In our example the interval-ratio variable is `pes19_lr_self_1` and the categorial (grouping) variable is `pes19_province`. For your own data replace with the appropriate variables.
+
+`data = canada`
+
+:   This specifies the data set to be used.
+
+`summary(anova_out)`
+
+:   This provides a summary of the model that we estimated (`anova_out`).
+
+```{r, echo = FALSE}
+anova_out <- aov(formula = pes19_lr_self_1 ~ pes19_province, 
+                 data = canada)
+summary(anova_out)
+```
+
+The summary will print out the degrees of freedom (`Df`), sum of squares (`Sum Sq`), mean squares (`Mean Sq`), F value (`F value`) and p-value (`Pr(>F)`). In this example we observe a significant difference in the mean left-right scores of inhabitants of Canadian provinces, *F*(12, 4356) = 4.261, *p* \< .001.
+
+## Pairwise t-test for comparing multiple group means
+
+We can use a pairwise t-test for comparing the means of all possible pairs of groups. We use a multiple testing adjustment (bonferroni correction) to account for the fact that we are conducting many t-tests:
+
+```{r, eval=FALSE}
+pairwise.t.test(x = canada$pes19_lr_self_1,
+                g = canada$pes19_province,
+                p.adjust.method = "bonferroni",
+                alternative = "two.sided")
+```
+
+`pairwise.t.test(…)`
+
+:   This calls the function `pairwise.t.test` to conduct this test. It is included in the `stats` packages, which is loaded automatically.
+
+`x = canada$pes19_lr_self_1`
+
+:   We specify the interval ratio variable here (in our case variable `pes19_lr_self_1` from the dataset `canada`). We need to use the dollar sign notation, i.e. `<dataset>$<variable name>`
+
+`g = canada$pes19_province`
+
+:   We specify the grouping variable here, again using the dollar sign notation (see above).
+
+`p.adjust.method = "bonferroni"`
+
+:   This specifies that we want to use the Bonferroni correction.
+
+`alternative = "two.sided"`
+
+:   This conducts two-sided significance tests (the default). Other options include `"greater"` and `"less"`.
+
+```{r, echo=FALSE}
+pairwise.t.test(x = canada$pes19_lr_self_1,
+                g = canada$pes19_province,
+                p.adjust.method = "bonferroni",
+                alternative = "two.sided")
+```
+
+## Reporting ANOVA
+
+ANOVA compares variances in order to establish whether there is a difference in means between more than two groups. We use example data on the rating of 4 seasons of game of thrones.
+
+*Example output R (do not include the output directly in an academic paper):*
+
+```{r, echo=FALSE, include =FALSE}
+#set.seed(2022)
+#year <- c(rep('1', 114), rep('2', 97), rep('3', 65))  
+#political_education <- c(rpois(n = 114, lambda = 2), rpois(n = 97, lambda = 3), rpois(n = 65, lambda = 4.5))
+#education <- as.data.frame(cbind(year, political_education))
+#education$political_education <- as.numeric(education$political_education)
+#education$year <- as.factor(education$year)
+#export(education, "docs/education.csv")
+# education <- import("docs/education.csv")
+# education$year <- as.numeric(education$year)
+# table(education$year)
+# str(education$year)
+set.seed(1234)
+season <- c(rep("S5", 42),
+            rep("S6", 46),
+            rep("S7", 46),
+            rep("S8", 45))
+
+# rnorm(n=72, mean=91, sd=12),
+# rnorm(n=68, mean=87, sd=11),
+# rnorm(n=71, mean=92, sd=9),
+# rnorm(n=87, mean=90, sd=10),
+
+
+score <- c(rnorm(n=42, mean=89, sd=33.0),
+           rnorm(n=46, mean=88, sd=33.1),
+           rnorm(n=46, mean=87, sd=32.9),
+           rnorm(n=45, mean=61, sd=23.0))
+
+got_dta <- data.frame(season, score)
+got_dta$season <- factor(got_dta$season, levels = c("S5", 
+                                                       "S6", 
+                                                       "S7", 
+                                                       "S8"), ordered = TRUE)
+
+library(psych)
+
+got_dta$score <- round(got_dta$score, 0)
+got_dta$score <- ifelse(got_dta$score > 100, 100, got_dta$score)
+got_dta$score <- ifelse(got_dta$score < 0, 0, got_dta$score)
+got_dta$score <- ifelse(got_dta$score < 45 & got_dta$season == "S5", got_dta$score + 15, got_dta$score)
+got_dta$score <- got_dta$score/10
+
+```
+
+
+```{r, echo=TRUE, include = TRUE}
+got_out <- aov(formula =  score ~ season, 
+                 data = got_dta)
+summary(got_out)
+```
+
+<!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
+
+<!-- ![](docs/spss_anova.png) -->
+
+#### Reporting
+
+The correct report includes:
+
+* A conclusion about the null hypothesis;
+* F(degrees of freedom Between Groups, degrees of freedom Within Groups,) = F-ratio,
+* p = p-value. When working with statistical software, you should report the exact p-value that is displayed. 
+  + in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p < 0.001 in your report.
+  <!-- + in SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
+
+::: callout-tip
+#### Report
+
+✓ There was a statistically significant difference between the mean rating of game of thrones seasons across different groups, F(3, 175) = 7.306, p < 0.001.
+:::
+
+
+## Bonferroni correction
+
+```{r, echo=TRUE, include = TRUE}
+library(stats)
+pairwise.t.test(score, season, p.adjust.method="bonferroni")
+```
+<!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
+
+<!-- ![](docs/spss_anova_2.png) -->
+
+The description of the pairwise comparison with Bonferroni correction can be added after the report from the ANOVA. You list the groups that differ significantly. Then you indicate that the other categories were not statistically significant and include the lowest p value.
+
+::: callout-tip
+#### Report
+
+The difference between the last category (season 8) and the categories season 6 and season 7 is significant when we apply a t-test with Bonferroni correction (p < 0.05). The differences between the remaining categories are not statistically significant (p = 0.20375 or higher).
+:::
+

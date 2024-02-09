@@ -1,0 +1,292 @@
+# Probability in R {#sec-analysis-probability}
+
+```{r setup, include=FALSE}
+library(openintro)  # We use data from this package
+library(tidyverse)  # This loads ggplot2, which produces the graphs
+```
+
+## Dice rolling
+
+We can use R to calculate the probabilities of various dice-rolling events, such as the probability of getting specific numbers when rolling a six-sided dice several times. This can be helpful, for example, to check your manual calculations and to see if you grasped the concepts of probability correctly. For dice-rolling events, we can use the `dice` package. If you are working on your personal computer you may need to install the package first using the command `install.packages("dice")`. Installing the package is not necessary on university computers.
+
+You can load the package as follows:
+
+```{r, eval=TRUE}
+library(dice) # Import required package
+```
+
+For a specified dice-rolling process, the command `getEventProb()` calculates the probability of an event. We can specify this by passing a list object in to `eventList`. The package can simulate various scenarios. I will demonstrate the basic functions but you may want to have a look at the additional functions, see [the manual](https://cran.r-project.org/web/packages/dice/dice.pdf).
+
+### Probability of rolling a 6 when rolling one six-sided dice
+
+```{r, eval=TRUE}
+getEventProb(nrolls = 1,
+             ndicePerRoll = 1,
+             nsidesPerDie = 6,
+             eventList = list(6))
+```
+
+`getEventProb(`
+
+:   This part of the code specifies that we want to get the probability for an event.
+
+`nrolls = 1,`
+
+:   This integer represents the number of dice rolls to make. In this case, we roll the die once.
+
+`ndicePerRoll = 1,`
+
+:   This integer represents the number of dice to use in each dice roll.
+
+`nsidesPerDie = 6,`
+
+:   This specifies the number of sides of the dice. You can, for example, change this if you would like to work with a 10 side dice. If you wand to simulate a six-side die, leave it at 6. One short remark here: Modern English considers dice as both singular and plural nouns. However, the R function still uses 'Die'. You must write the function exactly like this. R is, as mentioned earlier, case sensitive and can only find the function if you write it as `nsidesPerDie`.
+
+`eventList = list(6))`
+
+:   This specifies the event that we are interested in. Note that you have to use a `list()` command. A list is a type of object in R. For now, you do not need to know more about this. If you want to get the probability of e.g. rolling a 4, you need to change this part of the code to `eventList = list(4))`
+
+### Probability of rolling a 1 or a 4 when rolling one six-sided die
+
+We can change the code according to the event that we are interested in. If we want to know the probability of rolling either a 1 or a 4 when rolling one six-sided die, we would write:
+
+```{r, eval=TRUE}
+getEventProb(nrolls = 1,
+             ndicePerRoll = 1,
+             nsidesPerDie = 6,
+             eventList = list(c(1,4)))
+```
+
+`getEventProb(`
+
+:   This part of the code specifies that we want to get the probability for an event.
+
+`nrolls = 1,`
+
+:   This integer represents the number of dice rolls to make.
+
+`ndicePerRoll = 1,`
+
+:   This integer represents the number of dice to use in each dice roll.
+
+`nsidesPerDie = 6,`
+
+:   This specifies the number of sides of the dice.
+
+`eventList = list(c(1,4)))`
+
+:   This specifies the event that we are interested in. Here, we are interested in a 1 or a 4. You write it by including `c(1,4)` in your list. You can add more numbers. For example, if you want to calculate the probaility of rolling a 1, 2 or a 5 you would write `eventList = list(c(1,2,5)))`.
+
+### Probability of rolling two 1's when rolling a six-sided die twice
+
+If we want to know the probability of rolling two 1's when rolling a six-sided die twice, we would write:
+
+```{r, eval=TRUE}
+getEventProb(nrolls = 2, 
+             ndicePerRoll = 1,
+             nsidesPerDie = 6,
+             eventList = list(1,1),
+             orderMatters = TRUE)
+```
+
+`getEventProb(`
+
+:   This part of the code specifies that we want to get the probability for an event.
+
+`nrolls = 2,`
+
+:   This integer represents the number of dice rolls to make.
+
+`ndicePerRoll = 1,`
+
+:   This integer represents the number of dice to use in each dice roll.
+
+`nsidesPerDie = 6,`
+
+:   This specifies the number of sides of the dice.
+
+`eventList = list(1,1))`
+
+:   This specifies the event that we are interested in. Here, we are interested in two 1's. Note that this is different than before because we do not write `c()`. Instead, we specify that the outcome of interest is, in this example, 1, followed by a 1. For other events, change the numbers in the bracket.
+
+**`orderMatters = TRUE`**
+
+:   This option indicates that the order of conditions in `evenList` matters. In this example, it makes no difference.
+
+## Deck of cards
+
+We can use R to calculate the probabilities of drawing combinations of cards from a deck of cards. A standard deck of cards has 52 cards in 13 values and 4 suits. The suits are Spade, Club, Diamond and Heart. Each suit has 13 card values: 2-10, 3 "face cards" Jack, Queen, King (J, Q, K) and an Ace. Unfortunately, there is no R package available similar to the dice rolling example. However, the `openintro` data contains a pre-defined deck of cards which contains all the cards in a standard deck:
+
+```{r, eval=TRUE}
+data(cards, package = "openintro")  # Specify that we want to use the dataset cards from openintro
+```
+
+There are 52 observations on 4 variables in the data set.
+
+`value`
+
+:   a factor with levels 10 2 3 4 5 6 7 8 9 A J K Q
+
+`color`
+
+:   a factor with levels black red
+
+`suit`
+
+:   a factor with levels Club Diamond Heart Spade
+
+`face`
+
+:   a logical vector (TRUE for face cards and FALSE for all other cards)
+
+To calculate the probability of an 'Ace' card we can check how often such a card occurs. This can be easily done in R with the `filter()` function from the `tidyverse` package. The package is installed on all university computers.
+
+```{r, eval=TRUE}
+library(tidyverse) # Import required package
+```
+
+We can then use the `filter()` function to pick cases based on their values. The function was introduced above. For our purpose here, we use a specific way to select cards in our deck as follows:
+
+```{r, eval=TRUE}
+cards |> 
+  filter(value == "A")
+```
+
+`cards |>`
+
+:   This part of the code specifies that we are working with the 'cards' data frame. `|>` is called the pipe operator in R (see week 2).
+
+`filter(value == "A")`
+
+:   Here we ask R to pick cases (i.e. filter) if any of the cards (note that this variable is named 'value' equals the string 'A'. Please note that the function is case sensitive (i.e. 'a' will not work).
+
+Now that we know that there are 4 aces and because we know that there are 52 cards in our deck, we can simply divide 4 by 52 to get the probability.
+
+```{r, eval=TRUE}
+4/52
+```
+
+Similarly, we can test how many 'Diamond' cards there are and calculate the probability:
+
+```{r, eval=TRUE}
+cards |> 
+  filter(suit == "Diamond") 
+13/52
+```
+
+If we are interested in face cards, our code changes slightly because this is a TRUE/FALSE vector. We do not include quotation marks but simply write:
+
+```{r, eval=TRUE}
+cards |> 
+  filter(face == TRUE) 
+16/52
+```
+
+We can find the occurrence of combinations, e.g. find all cards that are either Ace ***or*** a Diamond. To do this, we use the "\|" symbol to indicate 'or'.
+
+```{r, eval=TRUE}
+cards |> 
+  filter(suit == "Diamond" | value == "A")
+```
+
+Based on this, there are 16 cards that are either an Ace or a Diamond card. Therefore, the probability of drawing either an Ace card or a Diamond card is 16 divided by 52.
+
+```{r, eval=TRUE}
+16/52
+```
+
+You can also use the "&" symbol to indicate 'AND', for example to get the number of cards that are red and an Ace.
+
+```{r, eval=TRUE}
+cards |> 
+  filter(color == "red" & value == "A")
+```
+
+You can extend the code, for example by writing `cards |> filter(value %in% c("A", "K") | suit == "Diamond")` if you want to find the number of cards that are either Diamond, ***or*** Ace, ***or*** King.
+
+## Conditional probabilities with a contingency table
+
+We can explore probabilities within a contingency table. For this illustration, we use the data set from the book called `photo_classify` from the `openintro` package. This is a simulated data set for photo classifications based on a machine learning algorithm versus what the true classification is for those photos. While the data are not real, they resemble performance that would be reasonable to expect in a well-built classifier. For more information, see chapter 3.2 in the book.
+
+First, we make a contingency table of the two variables `mach_lean` and `truth`:
+
+```{r, eval=TRUE}
+library(flextable) 
+```
+
+This code displays the percentages across columns:
+
+```{r, eval=TRUE}
+library(openintro)
+data(photo_classify)
+
+table_example <- proc_freq(x = photo_classify, 
+                           row = "mach_learn", 
+                           col = "truth", 
+                           include.row_percent = FALSE, 
+                           include.table_percent = FALSE) 
+table_example
+```
+
+The `flextable` package also allows us to display the table percentages. The code below creates a table with joint probabilities for the `photo_classify` data. The proportions are calculated by dividing the count in each cell by the table's total (1822).
+
+```{r}
+table_example2 <- proc_freq(x = photo_classify, 
+                           row = "mach_learn", 
+                           col = "truth", 
+                           include.row_percent = FALSE,
+                           include.column_percent = FALSE,
+                           include.table_percent = TRUE,
+                           include.column_total = TRUE) 
+table_example2
+```
+
+`table_example = proc_freq(…)`
+
+:   We define that we want to create a table called `table_example2` using the function `proc_freq`.
+
+`x = photo_classify`
+
+:   This specifies which data set (data.frame) we would like to use.
+
+`row = "mach_learn",`
+
+:   This specifies the variable we want to use in the rows of the cross table.
+
+`col = "truth",`
+
+:   This specifies the variable we want to use in the column of the cross table.
+
+`include.row_percent = FALSE`
+
+:   This specifies that we do not want to include row percentages.
+
+`include.column_percent = FALSE,`
+
+:   This specifies that we do not want to include column percentages.
+
+`include.table_percent = TRUE`
+
+:   This specifies that we **do** want to include table percentages.
+
+`include.column_total = TRUE)`
+
+:   This specifies that we want to include column totals.
+
+Based on this we can see that in 10.81 % of the cases the classifier correctly predicted the fashion photos (see cell `fashion`, `pred_fashion`) and in 6.15 % of the cases, the classifier did not correctly predict a fashion photo. Likewise, in 1.21 % of the cases the classifier predicted a photo that was not a fashion photo as 'fashion' and in 81.83 % of the cases the classifier was correct in its assessment that a photo which was not a fashion photo was indeed not a fashion photo.
+
+This is the same table as displayed on p. 96 of the book.
+
+### Conditional probability
+
+To further investigate conditional probabilities, we can use the information from the table that we just created:
+
+Assume we want to calculate the probability that a photo was about fashion (`truth` is `fashion`) given that the prediction was that the photo is about fashion (`mach_learn` is `pred_fashion`). We can see that there were 219 cases in which the prediction was 'fashion' and the photo was, in fact, a fashion photo in 197 cases.
+
+P(`truth` is `fashion` given `mach_learn` is `pred_fashion` ) = $(\frac{197}{219})= 0.900$
+
+In R, we can calculate the value like this:
+
+```{r, eval=TRUE}
+197/219
+```
