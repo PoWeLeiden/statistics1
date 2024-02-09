@@ -1,8 +1,0 @@
-# Working with data in R
-
-This section of the materials focuses on working with data in R. You will learn how to:
-
-- Basics of using R and RStudio
-- Read/import data into R
-- Create data in R
-- Modify data in R

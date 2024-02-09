@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical analysis and presentation using R - 8&nbsp; Graphing using ggplot2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./analysis_03_tables.html" rel="next">
+<link href="./analysis_01_descriptives.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./part_statistical_analysis.html">Statistical analysis in R</a></li><li class="breadcrumb-item"><a href="./analysis_02_graphs.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Graphing using ggplot2</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical analysis and presentation using R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./part_working_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Working with data in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_01_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Working with R and RStudio: the basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_02_filtering_selecting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Filtering, selecting &amp; renaming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_03_variables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Creating, summarising &amp; recoding variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_04_missing_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Missing data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_05_advanced_recoding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Advanced recoding of variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_06_merging_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Combining &amp; joining data sets</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./part_statistical_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical analysis in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_01_descriptives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Measures of central tendency and dispersion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_02_graphs.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Graphing using ggplot2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_03_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_04_probability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Probability in R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_05_normal_distribution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Normal distribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_06_proportions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inference for proportions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_07_chi_squared.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Chi-squared and measures of association</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_08_t-test.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">T-tests for means</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_09_power_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Power analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_10_anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">ANOVA</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./common_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Common errors in R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#general-introduction-to-ggplot" id="toc-general-introduction-to-ggplot" class="nav-link active" data-scroll-target="#general-introduction-to-ggplot"><span class="header-section-number">8.1</span> General introduction to ggplot</a>
+  <ul class="collapse">
+  <li><a href="#saving-a-ggplot-to-a-file" id="toc-saving-a-ggplot-to-a-file" class="nav-link" data-scroll-target="#saving-a-ggplot-to-a-file"><span class="header-section-number">8.1.1</span> Saving a ggplot to a file</a></li>
+  </ul></li>
+  <li><a href="#scatterplot" id="toc-scatterplot" class="nav-link" data-scroll-target="#scatterplot"><span class="header-section-number">8.2</span> Scatterplot</a>
+  <ul class="collapse">
+  <li><a href="#scatterplot-additional-options" id="toc-scatterplot-additional-options" class="nav-link" data-scroll-target="#scatterplot-additional-options"><span class="header-section-number">8.2.1</span> Scatterplot: additional options</a></li>
+  <li><a href="#scatterplot-multiple-groups" id="toc-scatterplot-multiple-groups" class="nav-link" data-scroll-target="#scatterplot-multiple-groups"><span class="header-section-number">8.2.2</span> Scatterplot: multiple groups</a></li>
+  <li><a href="#scatterplot-separate-graphs-per-group" id="toc-scatterplot-separate-graphs-per-group" class="nav-link" data-scroll-target="#scatterplot-separate-graphs-per-group"><span class="header-section-number">8.2.3</span> Scatterplot: separate graphs per group</a></li>
+  </ul></li>
+  <li><a href="#dot-plot" id="toc-dot-plot" class="nav-link" data-scroll-target="#dot-plot"><span class="header-section-number">8.3</span> Dot plot</a>
+  <ul class="collapse">
+  <li><a href="#dot-plot-additional-options" id="toc-dot-plot-additional-options" class="nav-link" data-scroll-target="#dot-plot-additional-options"><span class="header-section-number">8.3.1</span> Dot plot: additional options</a></li>
+  </ul></li>
+  <li><a href="#histogram" id="toc-histogram" class="nav-link" data-scroll-target="#histogram"><span class="header-section-number">8.4</span> Histogram</a>
+  <ul class="collapse">
+  <li><a href="#histogram-controlling-bin-size" id="toc-histogram-controlling-bin-size" class="nav-link" data-scroll-target="#histogram-controlling-bin-size"><span class="header-section-number">8.4.1</span> Histogram: controlling bin size</a></li>
+  <li><a href="#histogram-additional-options" id="toc-histogram-additional-options" class="nav-link" data-scroll-target="#histogram-additional-options"><span class="header-section-number">8.4.2</span> Histogram: additional options</a></li>
+  </ul></li>
+  <li><a href="#box-plot" id="toc-box-plot" class="nav-link" data-scroll-target="#box-plot"><span class="header-section-number">8.5</span> Box plot</a>
+  <ul class="collapse">
+  <li><a href="#box-plot-additional-options" id="toc-box-plot-additional-options" class="nav-link" data-scroll-target="#box-plot-additional-options"><span class="header-section-number">8.5.1</span> Box plot: additional options</a></li>
+  <li><a href="#box-plot-multiple-groups" id="toc-box-plot-multiple-groups" class="nav-link" data-scroll-target="#box-plot-multiple-groups"><span class="header-section-number">8.5.2</span> Box plot: multiple groups</a></li>
+  </ul></li>
+  <li><a href="#bar-plot" id="toc-bar-plot" class="nav-link" data-scroll-target="#bar-plot"><span class="header-section-number">8.6</span> Bar plot</a>
+  <ul class="collapse">
+  <li><a href="#bar-plot-additional-options" id="toc-bar-plot-additional-options" class="nav-link" data-scroll-target="#bar-plot-additional-options"><span class="header-section-number">8.6.1</span> Bar plot: additional options</a></li>
+  <li><a href="#bar-plot-multiple-groups" id="toc-bar-plot-multiple-groups" class="nav-link" data-scroll-target="#bar-plot-multiple-groups"><span class="header-section-number">8.6.2</span> Bar plot: multiple groups</a></li>
+  <li><a href="#bar-plot-of-means" id="toc-bar-plot-of-means" class="nav-link" data-scroll-target="#bar-plot-of-means"><span class="header-section-number">8.6.3</span> Bar plot of means</a></li>
+  </ul></li>
+  <li><a href="#describing-graphs" id="toc-describing-graphs" class="nav-link" data-scroll-target="#describing-graphs"><span class="header-section-number">8.7</span> Describing graphs</a>
+  <ul class="collapse">
+  <li><a href="#dotplot" id="toc-dotplot" class="nav-link" data-scroll-target="#dotplot"><span class="header-section-number">8.7.1</span> Dotplot:</a></li>
+  <li><a href="#histogram-1" id="toc-histogram-1" class="nav-link" data-scroll-target="#histogram-1"><span class="header-section-number">8.7.2</span> Histogram:</a></li>
+  <li><a href="#boxplot" id="toc-boxplot" class="nav-link" data-scroll-target="#boxplot"><span class="header-section-number">8.7.3</span> Boxplot:</a></li>
+  <li><a href="#scatterplot-1" id="toc-scatterplot-1" class="nav-link" data-scroll-target="#scatterplot-1"><span class="header-section-number">8.7.4</span> Scatterplot:</a></li>
+  <li><a href="#barplot" id="toc-barplot" class="nav-link" data-scroll-target="#barplot"><span class="header-section-number">8.7.5</span> Barplot:</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./part_statistical_analysis.html">Statistical analysis in R</a></li><li class="breadcrumb-item"><a href="./analysis_02_graphs.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Graphing using ggplot2</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-analysis-graphs" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Graphing using ggplot2</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The package <a href="https://ggplot2.tidyverse.org/">ggplot2</a> offers the most consistent and flexible way to create graphs in R. We will focus on the basic graph types using examples. This is what we expect you to be able to do.</p>
+<p>More detailed options can be found on the ggplot2 website and <a href="https://ggplot2.tidyverse.org/#cheatsheet">cheat sheet</a>, but these are not exam material.</p>
+<p>We also load the package <a href="https://scales.r-lib.org/">scales</a> which gives us some additional tools to override the default breaks, labels, transformations and palettes.</p>
+<p>We load the necessary packages as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># This loads ggplot2, which produces the graphs</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)    <span class="co"># This loads scales</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openintro) <span class="co"># We use data from this package</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="general-introduction-to-ggplot" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="general-introduction-to-ggplot"><span class="header-section-number">8.1</span> General introduction to ggplot</h2>
+<p>Plots using ggplot 2 are designed in layers.</p>
+<p>Every ggplot starts with the <code>ggplot</code> function, in which you define the dataset that is used and the main variables. For example in the graph below we define <code>loan50</code> as the <code>data</code> . Next, we ‘map’ the variables that we are using using the <code>aes</code> function, which maps variables to elements of the graph. In the below example we indicate that we want to use variable <code>total_income</code> on the x-axis and <code>loan_amount</code> on the y-axis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50) <span class="co"># This loads the dataset loan50 from openintro</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The above code produces an ‘empty’ graph, because we have not yet told R what kind of graph we would like to produce: perhaps a line graph, scatter plot or something else? We need to add a geom layer to the graph in order to produce points, lines or bars in the graph. Below we add points to the graph using <code>geom_point()</code>. Note that we also add a plus sign (<code>+</code>) after the second line, which ensures that we add the points to our graph:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also add additional layers to make the graph look differently, change labels or add further elements to the graph. You will find examples of this for each of the graph types below.</p>
+<section id="saving-a-ggplot-to-a-file" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="saving-a-ggplot-to-a-file"><span class="header-section-number">8.1.1</span> Saving a ggplot to a file</h3>
+<p>If you would like to use a graph in, for example, a Word document or Powerpoint, you can export the ggplot using the <code>ggsave</code> command. This saves the last plotted ggplot to a file:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> <span class="st">"scatterplot_example.png"</span>, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">width=</span><span class="dv">7</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">height=</span><span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl>
+<dt><code>filename = "scatterplot_example.png"</code></dt>
+<dd>
+<p>You need to give the file a name and an extension. In this example, the file name is set to <code>scatterplot_example.png</code>. This creates a <a href="https://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG file</a>, which often works well if you want to use the graph in a text document or presentation. You can also create other file formats, such as a <code>jpeg</code> or <code>pdf</code> file, by changing the extension, i.e.&nbsp;<code>scatterplot_example.pdf</code>.</p>
+</dd>
+<dt>width = 7</dt>
+<dd>
+<p>This provides the width of the graph in inches.</p>
+</dd>
+<dt>height = 7</dt>
+<dd>
+<p>This provides the height of the graph in inches.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="scatterplot" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="scatterplot"><span class="header-section-number">8.2</span> Scatterplot</h2>
+<p>A scatterplot provides an overview of each unique point for two numerical values. It is most useful when there are many unique values.</p>
+<p>In the below example we plot <code>total_income</code> on the x-axis (horizontally) and <code>loan_amount</code> on the y-axis (vertically).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50) <span class="co"># This loads the dataset loan50 from openintro</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>data = loan50</code></dt>
+<dd>
+<p>This bit of code says that the data frame we are using is called <code>loan50</code>. For your own graph, you would replace <code>loan50</code> by the name of the data.frame you are using.</p>
+</dd>
+<dt><code>mapping = aes(x = total_income, y = loan_amount)</code></dt>
+<dd>
+<p>This part of the code says that <code>total_income</code> is the variable we would like to display on the x axis and <code>loan_amount</code> is to be displayed on the y axis. For your own graph, you would thus replace <code>total_income</code> and <code>loan_amount</code> by your own variables.</p>
+</dd>
+<dt><code>geom_point()</code></dt>
+<dd>
+<p>This tells ggplot2 that we would like to create a scatterplot with points for the two variables. We do not require any extra arguments for a basic scatterplot.</p>
+</dd>
+</dl>
+<section id="scatterplot-additional-options" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="scatterplot-additional-options"><span class="header-section-number">8.2.1</span> Scatterplot: additional options</h3>
+<p>To make the scatterplot look somewhat nicer, we can add extra options. Note that to add options to a plot we simply use the <code>+</code> sign at the end of the line:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">2</span>, <span class="at">colour =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Total income and loan amount"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Total Income"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Loan Amount"</span>) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels=</span>scales<span class="sc">::</span><span class="fu">label_dollar</span>()) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span>scales<span class="sc">::</span><span class="fu">label_dollar</span>()) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_point(size = 2, colour = "grey")</code></dt>
+<dd>
+<p>These options allow us to set the size and the colour of the dots. Note that the colour name is a string and needs to be put in quotation marks: “grey”.</p>
+</dd>
+<dt><code>labs(title = "Title", x = "x axis title", y = "y axis title")</code></dt>
+<dd>
+<p>This option adds nicer names for the title of the graph, and the titles of the x and y axis.</p>
+</dd>
+<dt><code>scale_x_continuous(labels=scales::label_dollar())</code></dt>
+<dd>
+<p>This options and its ‘sister’ <code>scale_y_continuous</code> change how the values and axes are presented. In this case we would like to display the values in dollars. This can be done with <code>scales::label_dollar()</code>.</p>
+</dd>
+<dt><code>theme_minimal()</code></dt>
+<dd>
+<p>In order to change the entire look of a graph, you can use the theme_* functions (where in place of star you can add various options, such as <code>theme_minimal()</code>, <code>theme_classic()</code> or <code>theme_light()</code>.</p>
+</dd>
+</dl>
+</section>
+<section id="scatterplot-multiple-groups" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="scatterplot-multiple-groups"><span class="header-section-number">8.2.2</span> Scatterplot: multiple groups</h3>
+<p>Sometimes you have different groups in your data that you would like to visualise. In this case you can modify the geom_point to change the colour or shape of the points by a group. In this example, the colour of the dot will indicate home ownership:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> homeownership)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_point(aes(colour = homeownership))</code></dt>
+<dd>
+<p>This indicates that the <code>colour</code> of the points will vary by <code>homeownership</code> (rent, mortgage, own). R will automatically choose a <code>colour</code> for each group. For your own graph, you would change homeownership to your own grouping variable name. Note: don’t forget to put <code>colour = homeownership</code> inside <code>aes().</code></p>
+</dd>
+</dl>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> homeownership)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_point(aes(shape = homeownership))</code></dt>
+<dd>
+<p>This indicates that the <code>shape</code> of the points will vary by <code>homeownership</code> (rent, mortgage, own). R will automatically choose a <code>shape</code> for each group. For your own graph, you would change homeownership to your own grouping variable name. Note: don’t forget to put <code>shape = homeownership</code> inside <code>aes().</code></p>
+</dd>
+</dl>
+</section>
+<section id="scatterplot-separate-graphs-per-group" class="level3" data-number="8.2.3">
+<h3 data-number="8.2.3" class="anchored" data-anchor-id="scatterplot-separate-graphs-per-group"><span class="header-section-number">8.2.3</span> Scatterplot: separate graphs per group</h3>
+<p>Sometimes instead of using different colours or shapes for a group you would like to produce a separate graph for each group. These are called ‘facets’ and can be produced like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> total_income, <span class="at">y =</span> loan_amount)) <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(homeownership))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>facet_wrap(vars(homeownership))</code></dt>
+<dd>
+<p>This indicates that we would like to produce a separate ‘facet’ for each value of <code>homeownership</code> (rent, mortgage, own). For your own graph, you would change <code>homeownership</code> to your own grouping variable name. Note: don’t forget to put the variable name within <code>vars()</code>. There are additional options for the function <a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html"><code>facet_wrap</code></a> to control how these are displayed, for example the number of rows (<code>nrow</code>) and columns (<code>ncol</code>).</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="dot-plot" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="dot-plot"><span class="header-section-number">8.3</span> Dot plot</h2>
+<p>A dot plot summarises the values for a single variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_dotplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Bin width defaults to 1/30 of the range of the data. Pick better value with
+`binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>data = loan50</code></dt>
+<dd>
+<p>This bit of code says that the data frame we are using is called <code>loan50</code>. For your own graph, you would replace <code>loan50</code> by the name of the data.frame you are using.</p>
+</dd>
+<dt><code>mapping = aes(x = interest_rate)</code></dt>
+<dd>
+<p>This part of the code says that <code>interest_rate</code> is the variable we would like to display. For your own graph, you would thus replace <code>interest_rate</code> by your own variables.</p>
+</dd>
+<dt><code>geom_dotplot()</code></dt>
+<dd>
+<p>This tells ggplot2 that we would like to create a dotplot. We do not require additional options for a basic dot plot.</p>
+</dd>
+</dl>
+<section id="dot-plot-additional-options" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="dot-plot-additional-options"><span class="header-section-number">8.3.1</span> Dot plot: additional options</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_dotplot</span>() <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Dot plot of interest rate"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Interest rate"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">scale=</span><span class="dv">1</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">25</span>,<span class="at">by=</span><span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Bin width defaults to 1/30 of the range of the data. Pick better value with
+`binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>labs(title = "Title", x = "x axis title", y = "")</code></dt>
+<dd>
+<p>This option adds nicer names for the title of the graph, and the titles of the x and y axis. In the example we remove the y axis title by setting it to nothing (<code>""</code>)</p>
+</dd>
+<dt><code>scale_x_continuous(labels = scales::label_percent(scale=1), breaks=seq(5,25,by=5)</code></dt>
+<dd>
+<p>This option changes how the x-axis is presented. In this case we would like to display the values in percentages. This can be done with <code>scales::percent_format()</code>. We also set <code>breaks=seq(5,25, by=5)</code> to tell R that we would like to have x-axis values displayed at 5%, 10%, 15%, 20% and 25%.</p>
+</dd>
+<dt><code>theme_minimal()</code></dt>
+<dd>
+<p>In order to change the entire look of a graph, you can use the theme_* functions (where in place of star you can add various options, such as <code>theme_minimal()</code>, <code>theme_classic()</code> or <code>theme_light()</code>.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="histogram" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="histogram"><span class="header-section-number">8.4</span> Histogram</h2>
+<p>A histogram provide an overview of a numerical variable, by presenting the counts of (binned) values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>data = loan50</code></dt>
+<dd>
+<p>This bit of code says that the data frame we are using is called <code>loan50</code>. For your own graph, you would replace <code>loan50</code> by the name of the data.frame you are using.</p>
+</dd>
+<dt><code>mapping = aes(x = interest_rate)</code></dt>
+<dd>
+<p>This part of the code says that <code>interest_rate</code> is the variable we would like to display. For your own graph, you would thus replace <code>interest_rate</code> by your own variable.</p>
+</dd>
+<dt><code>geom_histogram()</code></dt>
+<dd>
+<p>This tells ggplot2 that we would like to create a histogram. This produces a basic histogram with 30 bins (see below for options that changes this default).</p>
+</dd>
+</dl>
+<section id="histogram-controlling-bin-size" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="histogram-controlling-bin-size"><span class="header-section-number">8.4.1</span> Histogram: controlling bin size</h3>
+<p>There are various options to control how the data of the variable is grouped: controlling the width of the bins, the number of bins or setting manual break points:</p>
+<section id="width-of-the-bins" class="level4" data-number="8.4.1.1">
+<h4 data-number="8.4.1.1" class="anchored" data-anchor-id="width-of-the-bins"><span class="header-section-number">8.4.1.1</span> Width of the bins</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_histogram(binwidth = 2.5)</code></dt>
+<dd>
+<p>The option binwidth sets the width of the bins, in this example to 2.5.</p>
+</dd>
+</dl>
+</section>
+<section id="number-of-bins" class="level4" data-number="8.4.1.2">
+<h4 data-number="8.4.1.2" class="anchored" data-anchor-id="number-of-bins"><span class="header-section-number">8.4.1.2</span> Number of bins</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_histogram(bins = 10)</code></dt>
+<dd>
+<p>The option bins sets the number of bins, in this example to 10.</p>
+</dd>
+</dl>
+</section>
+<section id="manual-breakpoints" class="level4" data-number="8.4.1.3">
+<h4 data-number="8.4.1.3" class="anchored" data-anchor-id="manual-breakpoints"><span class="header-section-number">8.4.1.3</span> Manual breakpoints</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">5</span>,<span class="fl">27.5</span>,<span class="at">by=</span><span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_histogram(breaks=seq(5,27.5,by=2.5)</code></dt>
+<dd>
+<p>The option breaks sets exact breakpoints for the bins in the histograms. In this example we set breakpoints from 5 to 27.5 by increments of 2.5 (i.e.&nbsp;the first bin is 5-7.5, the second one 7.5-10, etc.).</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="histogram-additional-options" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="histogram-additional-options"><span class="header-section-number">8.4.2</span> Histogram: additional options</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">5</span>,<span class="fl">27.5</span>,<span class="at">by=</span><span class="fl">2.5</span>), <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">fill=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Histogram of interest rate"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Interest Rate"</span>, <span class="at">y=</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_histogram(colour = "black", fill="grey")</code></dt>
+<dd>
+<p>This controls the look and feel of the bars. In this example we add a black border to the bar by setting the <code>colour</code> and change the <code>fill</code> colour to grey.</p>
+</dd>
+<dt><code>labs(title = "Title", x = "x axis title", y = "y axis title")</code></dt>
+<dd>
+<p>This option adds nicer names for the title of the graph, and the titles of the x and y axis.</p>
+</dd>
+<dt><code>theme_minimal()</code></dt>
+<dd>
+<p>In order to change the entire look of a graph, you can use the theme_* functions (where in place of star you can add various options, such as <code>theme_minimal()</code>, <code>theme_classic()</code> or <code>theme_light()</code>.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="box-plot" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="box-plot"><span class="header-section-number">8.5</span> Box plot</h2>
+<p>A box plot summarizes a variable, using five statistics, including the median, Q1 and Q3.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>data = loan50</code></dt>
+<dd>
+<p>This bit of code says that the data frame we are using is called <code>loan50</code>. For your own graph, you would replace <code>loan50</code> by the name of the data.frame you are using.</p>
+</dd>
+<dt><code>mapping = aes(x = interest_rate)</code></dt>
+<dd>
+<p>This part of the code says that <code>interest_rate</code> is the variable we would like to display. For your own graph, you would thus replace <code>interest_rate</code> by your own variable.</p>
+</dd>
+<dt><code>geom_boxplot()</code></dt>
+<dd>
+<p>This tells ggplot2 that we would like to create a boxplot. This produces a basic boxplot.</p>
+</dd>
+</dl>
+<section id="box-plot-additional-options" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="box-plot-additional-options"><span class="header-section-number">8.5.1</span> Box plot: additional options</h3>
+<p>A box plot summarizes a variable, using five statistics, including the median, Q1 and Q3.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">y =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of interest rate"</span>, </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Interest rate"</span>) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_blank</span>(),<span class="at">axis.ticks.x=</span><span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>aes(y = interest_rate)</code></dt>
+<dd>
+<p>If we map interest_rate to the y-axis (rather than the x-axis) we change the orientation of the boxplot.</p>
+</dd>
+<dt><code>geom_boxplot(fill = "grey")</code></dt>
+<dd>
+<p>The option <code>fill</code> sets the colour of the boxes. Note that the colour has to be provided in between quotation marks (i.e.&nbsp;<code>"grey"</code>).</p>
+</dd>
+<dt><code>labs(title = "Title", x = "x axis title", y = "y axis title")</code></dt>
+<dd>
+<p>This option adds nicer names for the title of the graph, and the titles of the x and y axis.</p>
+</dd>
+<dt><code>theme_minimal()</code></dt>
+<dd>
+<p>In order to change the entire look of a graph, you can use the theme_* functions (where in place of star you can add various options, such as <code>theme_minimal()</code>, <code>theme_classic()</code> or <code>theme_light()</code>.</p>
+</dd>
+<dt><code>theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())</code></dt>
+<dd>
+<p>In order to make sure no labels and ticks are printed on the x-axis we remove them (since these are meaningless).</p>
+</dd>
+</dl>
+</section>
+<section id="box-plot-multiple-groups" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="box-plot-multiple-groups"><span class="header-section-number">8.5.2</span> Box plot: multiple groups</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> interest_rate, <span class="at">y =</span> homeownership)) <span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>aes(x = interest_rate, y = homeownership)</code></dt>
+<dd>
+<p>In this example we display interest rate by type of home ownership (own, mortgage, rent). Here we map <code>interest_rate</code> to the x-axis and <code>homeownership</code> to the y-axis. Note the second variable (in this case <code>homeownership</code>) needs to be a <code>factor</code> or <code>character</code> variable (i.e.&nbsp;categorical).</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="bar-plot" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="bar-plot"><span class="header-section-number">8.6</span> Bar plot</h2>
+<p>A bar plot can be used to display counts or proportions of categorical variables. You can also use it to display summary statistics (e.g.&nbsp;means) for various groups.</p>
+<blockquote class="blockquote">
+<p>Note that a <strong>histogram</strong> is used to display frequencies of (binned) numerical (interval-ratio) variables, while a <strong>bar plot</strong> is used to display frequencies of categorical variables.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> homeownership)) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>data = loan50</code></dt>
+<dd>
+<p>This bit of code says that the data frame we are using is called <code>loan50</code>. For your own graph, you would replace <code>loan50</code> by the name of the data.frame you are using.</p>
+</dd>
+<dt><code>mapping = aes(x = homeownership)</code></dt>
+<dd>
+<p>This part of the code says that <code>homeownership</code> is the variable we would like to display. For your own graph, you would thus replace <code>homeownership</code> by your own variable.</p>
+</dd>
+<dt><code>geom_bar()</code></dt>
+<dd>
+<p>This tells ggplot2 that we would like to create a barplot. This produces a basic barplot.</p>
+</dd>
+</dl>
+<section id="bar-plot-additional-options" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="bar-plot-additional-options"><span class="header-section-number">8.6.1</span> Bar plot: additional options</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> homeownership)) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">colour =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Homeownership"</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Home ownership type"</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_bar(fill = "grey", colour = "black")</code></dt>
+<dd>
+<p>The option <code>fill</code> sets the colour of the bars and <code>colour</code> sets the colour of the border. Note that the colour has to be provided in between quotation marks (i.e.&nbsp;<code>"grey"</code>).</p>
+</dd>
+<dt><code>labs(title = "Title", x = "x axis title", y = "y axis title")</code></dt>
+<dd>
+<p>This option adds nicer names for the title of the graph, and the titles of the x and y axis. Note: if you would like to change the way the categories are presented (i.e.&nbsp;‘Rent’ instead of ‘rent’), you would need to <code>recode</code> the variable homeownership.</p>
+</dd>
+<dt><code>theme_minimal()</code></dt>
+<dd>
+<p>In order to change the entire look of a graph, you can use the theme_* functions (where in place of star you can add various options, such as <code>theme_minimal()</code>, <code>theme_classic()</code> or <code>theme_light()</code>.</p>
+</dd>
+</dl>
+</section>
+<section id="bar-plot-multiple-groups" class="level3" data-number="8.6.2">
+<h3 data-number="8.6.2" class="anchored" data-anchor-id="bar-plot-multiple-groups"><span class="header-section-number">8.6.2</span> Bar plot: multiple groups</h3>
+<p>When you have two categorical variables, you can create a bar plot that displays both variables. In the below case we display homeownership and verified_income.</p>
+<section id="stacked-bar-plot" class="level4" data-number="8.6.2.1">
+<h4 data-number="8.6.2.1" class="anchored" data-anchor-id="stacked-bar-plot"><span class="header-section-number">8.6.2.1</span> Stacked bar plot</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> homeownership)) <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> verified_income))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_bar(aes(fill = verified_income))</code></dt>
+<dd>
+<p>The option <code>fill</code> (within <code>aes</code> ) indicates that we want to subdivide each bar by the categories of <code>verified_income</code>.</p>
+</dd>
+</dl>
+<p><strong><em>Note:</em></strong> if you would like to change the labels in the legend for this graph, the best thing to do is to <code>rename</code> and <code>recode</code> the variable (<code>verified_income</code>).</p>
+</section>
+<section id="side-by-side-bar-plot" class="level4" data-number="8.6.2.2">
+<h4 data-number="8.6.2.2" class="anchored" data-anchor-id="side-by-side-bar-plot"><span class="header-section-number">8.6.2.2</span> Side-by-side bar plot</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> homeownership)) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> verified_income), <span class="at">position=</span><span class="st">"dodge"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_bar(aes(fill = verified_income), position = "dodge")</code></dt>
+<dd>
+<p>The option <code>fill</code> (within <code>aes</code> ) indicates that we want to subdivide each bar by the categories of <code>verified_income</code>. We add <code>position = "dodge"</code> to create a side-by-side bar plot instead of a stacked bar plot.</p>
+</dd>
+</dl>
+</section>
+<section id="percent-stacked-bar-plot" class="level4" data-number="8.6.2.3">
+<h4 data-number="8.6.2.3" class="anchored" data-anchor-id="percent-stacked-bar-plot"><span class="header-section-number">8.6.2.3</span> Percent stacked bar plot</h4>
+<p>This type of bar plot stacks the subcategories, but calculates them as a percentage.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> homeownership)) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> verified_income), <span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>()) <span class="sc">+</span> </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Percentage"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>geom_bar(aes(fill = verified_income), position = "fill")</code></dt>
+<dd>
+<p>The option <code>fill</code> (within <code>aes</code> ) indicates that we want to subdivide each bar by the categories of <code>verified_income</code>.</p>
+</dd>
+<dt><code>scale_y_continuous(labels = scales::label_percent())</code></dt>
+<dd>
+<p>This ensures that percentages rather than proportions are displayed on the y-axis.</p>
+</dd>
+<dt><code>labs(y = "Percentage")</code></dt>
+<dd>
+<p>To ensure that the y-axis says ‘Percentage’ instead of ‘counts’, we modify the label of the y axis.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="bar-plot-of-means" class="level3" data-number="8.6.3">
+<h3 data-number="8.6.3" class="anchored" data-anchor-id="bar-plot-of-means"><span class="header-section-number">8.6.3</span> Bar plot of means</h3>
+<p>We can also use bar plots to display statistics (for example means) of a numerical variable for each category of a categorical variable. For example, let’s plot the mean <code>interest_rate</code> per type of <code>homeownership</code>.</p>
+<p>First, we need to produce a data frame that shows the mean interest rate per type of home ownership. We can do this using <code>group_by</code> and <code>summarise</code> from the <code>dplyr</code> package. We will discuss these functions later on in the course in more detail. For now it is enough to understand that we are calculating the mean interest rate for each type of home ownership:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(loan50)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>loan50_means <span class="ot">&lt;-</span> loan50 <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(homeownership) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">interest_rate =</span> <span class="fu">mean</span>(interest_rate, <span class="at">na.rm=</span><span class="cn">TRUE</span>))</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>loan50_means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  homeownership interest_rate
+  &lt;fct&gt;                 &lt;dbl&gt;
+1 rent                   10.8
+2 mortgage               11.9
+3 own                    13.9</code></pre>
+</div>
+</div>
+<p>Using this new data frame <code>loan50_means</code>, we can create a bar plot of these means, using <code>geom_col()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> loan50_means,</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> homeownership, <span class="at">y =</span> interest_rate)) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_02_graphs_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<dl>
+<dt><code>data = loan50_means</code></dt>
+<dd>
+<p>Note that we are using the dataset <code>loan50_means</code> here, which we created above. It contains the mean <code>interest_rate</code> per type of <code>homeownership</code>.</p>
+</dd>
+<dt><code>mapping = aes(x = homeownership, y = interest_rate)</code></dt>
+<dd>
+<p>This part of the code gives the categorical (x) variable and the numeric (y) variable.</p>
+</dd>
+<dt><code>geom_col()</code></dt>
+<dd>
+<p>This tells ggplot2 that we would like to create a barplot where we want to display the values in the data (not the counts per group, as with <code>geom_bar</code>).</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="describing-graphs" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="describing-graphs"><span class="header-section-number">8.7</span> Describing graphs</h2>
+<p>When describing graphs, the list below provides some general guidelines for describing the common types of plots and charts.</p>
+<section id="dotplot" class="level3" data-number="8.7.1">
+<h3 data-number="8.7.1" class="anchored" data-anchor-id="dotplot"><span class="header-section-number">8.7.1</span> Dotplot:</h3>
+<ul>
+<li>The range of the data.</li>
+<li>The mode(s) of the data.</li>
+<li>The frequency or count of each value.</li>
+<li>The symmetry or skewness of the distribution.</li>
+</ul>
+</section>
+<section id="histogram-1" class="level3" data-number="8.7.2">
+<h3 data-number="8.7.2" class="anchored" data-anchor-id="histogram-1"><span class="header-section-number">8.7.2</span> Histogram:</h3>
+<ul>
+<li>The shape of the distribution (e.g., bell-shaped, skewed, bimodal).</li>
+<li>The range and frequency of values within each bin.</li>
+<li>The mode(s) of the data.</li>
+<li>Any outliers or unusual patterns in the data.</li>
+</ul>
+</section>
+<section id="boxplot" class="level3" data-number="8.7.3">
+<h3 data-number="8.7.3" class="anchored" data-anchor-id="boxplot"><span class="header-section-number">8.7.3</span> Boxplot:</h3>
+<ul>
+<li>Focus on the summary statistics: The median, quartiles, and range of the data.</li>
+<li>Any outliers or extreme values.</li>
+<li>When displayed for several groups, differences in the distribution of the data between different groups.</li>
+</ul>
+</section>
+<section id="scatterplot-1" class="level3" data-number="8.7.4">
+<h3 data-number="8.7.4" class="anchored" data-anchor-id="scatterplot-1"><span class="header-section-number">8.7.4</span> Scatterplot:</h3>
+<ul>
+<li>The strength and direction of the relationship between two variables.</li>
+<li>Any other visible patterns or trends in the data.</li>
+<li>Any outliers or extreme values.</li>
+</ul>
+</section>
+<section id="barplot" class="level3" data-number="8.7.5">
+<h3 data-number="8.7.5" class="anchored" data-anchor-id="barplot"><span class="header-section-number">8.7.5</span> Barplot:</h3>
+<ul>
+<li>The frequency or proportion of data points in each category. variables have no natural order, it does not make sense to discuss the shape for nominal variables.</li>
+<li>Differences in the distribution of the categorical variable between different groups or time periods.</li>
+<li>When a second categorical variable is used (e.g.&nbsp;stacked barplot): Differences in the distribution of the data wiuthin different groups.</li>
+<li>Any patterns or trends in the data. Note: This depends on the variable. As the categories of nominal</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./analysis_01_descriptives.html" class="pagination-link  aria-label=" &lt;span="" of="" central="" tendency="" and="" dispersion&lt;="" span&gt;"="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Measures of central tendency and dispersion</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./analysis_03_tables.html" class="pagination-link" aria-label="<span class='chapter-number'>9</span>&nbsp; <span class='chapter-title'>Tables</span>">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Tables</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

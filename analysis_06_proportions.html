@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical analysis and presentation using R - 12&nbsp; Inference for proportions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./analysis_07_chi_squared.html" rel="next">
+<link href="./analysis_05_normal_distribution.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./part_statistical_analysis.html">Statistical analysis in R</a></li><li class="breadcrumb-item"><a href="./analysis_06_proportions.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inference for proportions</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical analysis and presentation using R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./part_working_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Working with data in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_01_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Working with R and RStudio: the basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_02_filtering_selecting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Filtering, selecting &amp; renaming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_03_variables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Creating, summarising &amp; recoding variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_04_missing_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Missing data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_05_advanced_recoding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Advanced recoding of variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_06_merging_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Combining &amp; joining data sets</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./part_statistical_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical analysis in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_01_descriptives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Measures of central tendency and dispersion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_02_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Graphing using ggplot2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_03_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_04_probability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Probability in R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_05_normal_distribution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Normal distribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_06_proportions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inference for proportions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_07_chi_squared.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Chi-squared and measures of association</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_08_t-test.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">T-tests for means</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_09_power_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Power analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analysis_10_anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">ANOVA</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./common_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Common errors in R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#inference-for-a-single-proportion" id="toc-inference-for-a-single-proportion" class="nav-link active" data-scroll-target="#inference-for-a-single-proportion"><span class="header-section-number">12.1</span> Inference for a single proportion</a>
+  <ul class="collapse">
+  <li><a href="#confidence-interval-for-a-single-proportion" id="toc-confidence-interval-for-a-single-proportion" class="nav-link" data-scroll-target="#confidence-interval-for-a-single-proportion"><span class="header-section-number">12.1.1</span> Confidence interval for a single proportion</a></li>
+  <li><a href="#hypothesis-tests-for-a-single-proportion" id="toc-hypothesis-tests-for-a-single-proportion" class="nav-link" data-scroll-target="#hypothesis-tests-for-a-single-proportion"><span class="header-section-number">12.1.2</span> Hypothesis tests for a single proportion</a></li>
+  </ul></li>
+  <li><a href="#reporting-the-results-from-a-hypothesis-test-for-a-single-proportion" id="toc-reporting-the-results-from-a-hypothesis-test-for-a-single-proportion" class="nav-link" data-scroll-target="#reporting-the-results-from-a-hypothesis-test-for-a-single-proportion"><span class="header-section-number">12.2</span> Reporting the results from a hypothesis test for a single proportion</a></li>
+  <li><a href="#comparing-two-proportions" id="toc-comparing-two-proportions" class="nav-link" data-scroll-target="#comparing-two-proportions"><span class="header-section-number">12.3</span> Comparing two proportions</a>
+  <ul class="collapse">
+  <li><a href="#confidence-interval-for-the-difference-between-two-proportions" id="toc-confidence-interval-for-the-difference-between-two-proportions" class="nav-link" data-scroll-target="#confidence-interval-for-the-difference-between-two-proportions"><span class="header-section-number">12.3.1</span> Confidence interval for the difference between two proportions</a></li>
+  <li><a href="#hypothesis-test-for-the-difference-between-two-proportions" id="toc-hypothesis-test-for-the-difference-between-two-proportions" class="nav-link" data-scroll-target="#hypothesis-test-for-the-difference-between-two-proportions"><span class="header-section-number">12.3.2</span> Hypothesis test for the difference between two proportions</a></li>
+  </ul></li>
+  <li><a href="#reporting-the-results-from-a-hypothesis-test-for-the-difference-in-two-proportions" id="toc-reporting-the-results-from-a-hypothesis-test-for-the-difference-in-two-proportions" class="nav-link" data-scroll-target="#reporting-the-results-from-a-hypothesis-test-for-the-difference-in-two-proportions"><span class="header-section-number">12.4</span> Reporting the results from a hypothesis test for the difference in two proportions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./part_statistical_analysis.html">Statistical analysis in R</a></li><li class="breadcrumb-item"><a href="./analysis_06_proportions.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inference for proportions</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-analysis-proportions" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inference for proportions</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="inference-for-a-single-proportion" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="inference-for-a-single-proportion"><span class="header-section-number">12.1</span> Inference for a single proportion</h2>
+<section id="confidence-interval-for-a-single-proportion" class="level3" data-number="12.1.1">
+<h3 data-number="12.1.1" class="anchored" data-anchor-id="confidence-interval-for-a-single-proportion"><span class="header-section-number">12.1.1</span> Confidence interval for a single proportion</h3>
+<section id="calculating-by-hand-using-r" class="level4" data-number="12.1.1.1">
+<h4 data-number="12.1.1.1" class="anchored" data-anchor-id="calculating-by-hand-using-r"><span class="header-section-number">12.1.1.1</span> Calculating ‘by hand’ using R</h4>
+<p>One approach is to calculate the normal approximation of the binomial distribution (Wald interval), as described in the OpenIntro book. This is basically the same as doing the ‘manual’ calculation, but in R.</p>
+<p>As an example, we use a survey of voters in which 23% indicate to support the Conservatives. We estimate a 95% confidence interval for this estimate:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input (change these you appropriate values)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>p_hat <span class="ot">=</span> <span class="fl">0.23</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>confidence <span class="ot">=</span> <span class="fl">0.95</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform calculations (no need to change anything here)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>se <span class="ot">=</span> <span class="fu">sqrt</span>(p_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p_hat)<span class="sc">/</span> n)     <span class="co"># Calculate SE</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>z_star <span class="ot">=</span> <span class="fu">qnorm</span>((<span class="dv">1</span> <span class="sc">+</span> confidence) <span class="sc">/</span> <span class="dv">2</span>)  <span class="co"># Calculate z*-value </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>lower <span class="ot">=</span> p_hat <span class="sc">-</span> z_star <span class="sc">*</span> se           <span class="co"># Lower bound CI</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>upper <span class="ot">=</span> p_hat <span class="sc">+</span> z_star <span class="sc">*</span> se           <span class="co"># Upper bound CI</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(lower, upper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.203917 0.256083</code></pre>
+</div>
+</div>
+</section>
+<section id="using-summary-data" class="level4" data-number="12.1.1.2">
+<h4 data-number="12.1.1.2" class="anchored" data-anchor-id="using-summary-data"><span class="header-section-number">12.1.1.2</span> Using summary data</h4>
+<p>When you have only summary data, i.e.&nbsp;information about the sample size and sample proportion, we recommend using <code>prop.test</code> for calculating a confidence interval for a single proportion.[^3] The function <code>prop.test</code> is part of the package <code>stats</code>, which is one of the few packages that R automatically loads when it starts.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>p_hat <span class="ot">=</span> <span class="fl">0.23</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the actual test</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="at">x =</span> p_hat <span class="sc">*</span> n, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> n, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test with continuity correction
+
+data:  p_hat * n out of n, null probability 0.5
+X-squared = 290.52, df = 1, p-value &lt; 2.2e-16
+alternative hypothesis: true p is not equal to 0.5
+95 percent confidence interval:
+ 0.2045014 0.2576046
+sample estimates:
+   p 
+0.23 </code></pre>
+</div>
+</div>
+<p>Note: The results from the calculation by hand and from the function <code>prop.test</code> are slightly different. This is due to the fact that <code>prop.test</code> uses a slightly more complicated formula for calculating the confidence interval (Wilson score interval), also incorporating a ‘continutiy correction’ (which accounts for the fact that we are using a continuous normal distribution to approximate a discrete phenomenon, i.e.&nbsp;the number of successes).</p>
+<dl>
+<dt><code>prop.test</code></dt>
+<dd>
+<p>This is the function that conducts a test for a proportion and its confidence interval.</p>
+</dd>
+<dt><code>x = p_hat * n</code></dt>
+<dd>
+<p>The first value specified should be the number of successes. In our example his is the number of people supporting the Conservatives. We can calculate this as the sample proportion (<span class="math inline">\(\hat{p}\)</span>) times the sample size.</p>
+</dd>
+<dt><code>n = n</code></dt>
+<dd>
+<p>The second value specified should be the number of trials (read: the number of observations in our dataset). In our case: the number of respondents in the dataset.</p>
+</dd>
+<dt><code>conf.level = 0.95</code></dt>
+<dd>
+<p>This determines the confidence level. The default is 0.95 which corresponds to a 95% confidence interval.</p>
+</dd>
+</dl>
+</section>
+<section id="variables-in-a-data-frame" class="level4" data-number="12.1.1.3">
+<h4 data-number="12.1.1.3" class="anchored" data-anchor-id="variables-in-a-data-frame"><span class="header-section-number">12.1.1.3</span> Variables in a data frame</h4>
+<p>If you have a data frame with a variable that represents successes (or not) for each case, we can use the following procedure. In our example we have a variable that records the vote intention of a respondent, which is either <code>Conservative</code> or <code>Other party</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For this example, we create a dataset of 1000 respondents with 230 expressing support for the Conservatives</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>example_data <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">party_choice =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Conservatives"</span>, <span class="dv">230</span>), </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">rep</span>(<span class="st">"Other party"</span>, <span class="dv">770</span>))))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(example_data<span class="sc">$</span>party_choice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Conservatives   Other party 
+          230           770 </code></pre>
+</div>
+</div>
+<p>If we have data like this, we can directly calculate the confidence interval by running prop.test for the table:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="fu">table</span>(example_data<span class="sc">$</span>party_choice),</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl>
+<dt><code>table(example_data$party_choice)</code></dt>
+<dd>
+<p>The first argument is a table of our variable of interest, which we can create by this code. If you use your own data, replace <code>example_data</code> with the name of your data frame and <code>party_choice</code> with the name of the variable of interest.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><strong>Note</strong>: The table should include only two categories. R will calculate the confidence interval for the first category in the table (in our case: Conservatives).<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+</dd>
+<dt><code>conf.level = 0.95</code></dt>
+<dd>
+<p>This determines the confidence level. The default is 0.95 which corresponds to a 95% confidence interval.</p>
+</dd>
+</dl>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test with continuity correction
+
+data:  table(example_data$party_choice), null probability 0.5
+X-squared = 290.52, df = 1, p-value &lt; 2.2e-16
+alternative hypothesis: true p is not equal to 0.5
+95 percent confidence interval:
+ 0.2045014 0.2576046
+sample estimates:
+   p 
+0.23 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="hypothesis-tests-for-a-single-proportion" class="level3" data-number="12.1.2">
+<h3 data-number="12.1.2" class="anchored" data-anchor-id="hypothesis-tests-for-a-single-proportion"><span class="header-section-number">12.1.2</span> Hypothesis tests for a single proportion</h3>
+<section id="summary-data" class="level4" data-number="12.1.2.1">
+<h4 data-number="12.1.2.1" class="anchored" data-anchor-id="summary-data"><span class="header-section-number">12.1.2.1</span> Summary data</h4>
+<p>When you only have information about the sample size and the proportion, we recommend using <code>prop.test</code> for conducting a hypothesis test.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>p_hat <span class="ot">=</span> <span class="fl">0.23</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the actual test</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="at">x =</span> p_hat <span class="sc">*</span> n, </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> n, </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">p =</span> <span class="fl">0.25</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test with continuity correction
+
+data:  p_hat * n out of n, null probability 0.25
+X-squared = 2.028, df = 1, p-value = 0.1544
+alternative hypothesis: true p is not equal to 0.25
+95 percent confidence interval:
+ 0.2045014 0.2576046
+sample estimates:
+   p 
+0.23 </code></pre>
+</div>
+</div>
+<dl>
+<dt><code>prop.test</code></dt>
+<dd>
+<p>This is the function that conducts a test for a proportion.</p>
+</dd>
+<dt><code>x = p_hat * n</code></dt>
+<dd>
+<p>The first value specified should be the number of successes. We can calculate this as the sample proportion (<span class="math inline">\(\hat{p}\)</span>) times the sample size.</p>
+</dd>
+<dt><code>n = n</code></dt>
+<dd>
+<p>The second value specified should be the number of trials (read: the number of observations in our dataset). In our case: the number of respondents in the dataset.</p>
+</dd>
+<dt><code>p = 0.25</code></dt>
+<dd>
+<p>This specifies the hypothesized null value. In this example this is 0.25 or 25%, so we are testing the null hypothesis <span class="math inline">\(\mu_0 = 0.25\)</span></p>
+</dd>
+<dt><code>alternative = "two.sided"</code></dt>
+<dd>
+<p>Determine whether we want to use a two sided-test, or a one-sided test. Options are “two.sided” (default), “less” (when <span class="math inline">\(H_1: \mu &lt; p\)</span>) or “greater” (when <span class="math inline">\(H_1: \mu &gt; p\)</span>).</p>
+</dd>
+</dl>
+</section>
+<section id="variables-in-a-data-frame-1" class="level4" data-number="12.1.2.2">
+<h4 data-number="12.1.2.2" class="anchored" data-anchor-id="variables-in-a-data-frame-1"><span class="header-section-number">12.1.2.2</span> Variables in a data frame</h4>
+<p>If you have a data frame with a variable that represents successes (or not) for each case, we can input this data directly into <code>prop.test</code>. In our example we have a variable that records the vote intention of a respondent, which is either <code>Conservative</code> or <code>Other party</code> (for the preparation of the data see [Single proportion confidence intervals for variables in a data frame]).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="fu">table</span>(example_data<span class="sc">$</span>party_choice),</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">p =</span> <span class="fl">0.25</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl>
+<dt><code>table(example_data$party_choice)</code></dt>
+<dd>
+<p>The first argument is a table of our variable of interest, which we can create by this code. If you use your own data, replace <code>example_data</code> with the name of your data frame and <code>party_choice</code> with the name of the variable of interest.</p>
+<p><strong>Note</strong>: The table should include only two categories. R will perform the test that the proportion for the first category is equal to the hypothesized value (<code>p</code>, see below).</p>
+</dd>
+<dt><code>p = 0.25</code></dt>
+<dd>
+<p>This specifies the hypothesized null value. In this example this is 0.25 or 25%, so we are testing the null hypothesis <span class="math inline">\(\mu_0 = 0.25\)</span></p>
+</dd>
+<dt><code>alternative = "two.sided"</code></dt>
+<dd>
+<p>Determine whether we want to use a two sided-test, or a one-sided test. Options are “two.sided” (default), “less” (when <span class="math inline">\(H_1: \mu &lt; p\)</span>) or “greater” (when <span class="math inline">\(H_1: \mu &gt; p\)</span>).</p>
+</dd>
+</dl>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test with continuity correction
+
+data:  table(example_data$party_choice), null probability 0.25
+X-squared = 2.028, df = 1, p-value = 0.1544
+alternative hypothesis: true p is not equal to 0.25
+95 percent confidence interval:
+ 0.2045014 0.2576046
+sample estimates:
+   p 
+0.23 </code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="reporting-the-results-from-a-hypothesis-test-for-a-single-proportion" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="reporting-the-results-from-a-hypothesis-test-for-a-single-proportion"><span class="header-section-number">12.2</span> Reporting the results from a hypothesis test for a single proportion</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Obtain z-value based on manual calculation</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>p_hat <span class="ot">=</span> <span class="fl">0.12</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">1500</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">=</span> <span class="fl">0.10</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> (p_hat<span class="sc">-</span>p)<span class="sc">/</span>(<span class="fu">sqrt</span>((p<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">/</span>n)))</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.581989</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">*</span><span class="fu">pnorm</span>(<span class="at">q=</span>z, <span class="at">lower.tail=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.009823275</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the actual test</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="at">x =</span> p_hat <span class="sc">*</span> n, </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> n, </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">p =</span> <span class="fl">0.10</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">alternative =</span> <span class="st">"two.sided"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">correct =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test without continuity correction
+
+data:  p_hat * n out of n, null probability 0.1
+X-squared = 6.6667, df = 1, p-value = 0.009823
+alternative hypothesis: true p is not equal to 0.1
+95 percent confidence interval:
+ 0.1045180 0.1374233
+sample estimates:
+   p 
+0.12 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Output explanation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>the probability of finding the observed (<span class="math inline">\(z\)</span> or <span class="math inline">\(\chi^2\)</span>, given the null hypothesis (<em>p</em>-value) is given as follows:
+<ul>
+<li>in R, see p-value = 0.009823. Note: If the value is very close to zero, R may use the scientific notation for small numbers (e.g.&nbsp;2.2e-16 is the scientific notation of 0.00000000000000022). In these cases, write p &lt; 0.001 in your report.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<section id="reporting" class="level4" data-number="12.2.0.1">
+<h4 data-number="12.2.0.1" class="anchored" data-anchor-id="reporting"><span class="header-section-number">12.2.0.1</span> Reporting</h4>
+<p>If you calculate the results by hand and obtain a z-score, then the correct report includes:</p>
+<ul>
+<li>A conclusion about the null hypothesis; followed by</li>
+<li>Information about the sample percentage and the population percentage.</li>
+<li><span class="math inline">\(z\)</span> = the value of z.</li>
+<li>p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+<ul>
+<li>in R, small values may be displayed using the scientific notation (e.g.&nbsp;2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p &lt; 0.001 in your report.</li>
+</ul></li>
+</ul>
+<p>If you calculate the results using prop.test and obtain a <span class="math inline">\(\chi^2\)</span>-score, then the correct report includes:</p>
+<ul>
+<li>A conclusion about the null hypothesis; followed by</li>
+<li>Information about the sample percentage and the population percentage.</li>
+<li><span class="math inline">\(\chi^2\)</span> = the value of chi-square, followed by the degrees of freedom in brackets.</li>
+<li>p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+<ul>
+<li>in R, small values may be displayed using the scientific notation (e.g.&nbsp;2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p &lt; 0.001 in your report.</li>
+</ul></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Report
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>✓ The percentage of supporters found in our sample (N = 1500) who support the Socialist Party (12%) is statistically significantly different from the percentage of the entire population (10%), z=2.58, p=0.1394.</p>
+<p>✓ The percentage of supporters found in our sample (N = 1500) who support the Socialist Party (12%) is statistically significantly different from the percentage of the entire population (10%), <span class="math inline">\(\chi^2\)</span> (1)=6.6667, p=0.0098.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="comparing-two-proportions" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="comparing-two-proportions"><span class="header-section-number">12.3</span> Comparing two proportions</h2>
+<p>Last week, we calculated a confidence interval for a single proportion. This week we cover two (independent) proportions. The calculations below apply to the case where the two proportions are drawn from different samples or subsamples, for example the support for a party in two separate opinion polls or the left-right position of respondents who live in the capital city and those who do not live there (these groups are independent because you can only belong to one).</p>
+<section id="confidence-interval-for-the-difference-between-two-proportions" class="level3" data-number="12.3.1">
+<h3 data-number="12.3.1" class="anchored" data-anchor-id="confidence-interval-for-the-difference-between-two-proportions"><span class="header-section-number">12.3.1</span> Confidence interval for the difference between two proportions</h3>
+<p>We use the CPR data set from the <code>openintro</code> package (see p.&nbsp;218). The data set contains data on patients who were randomly divided into a treatment group where they received a blood thinner or the control group where they did not receive a blood thinner. The outcome variable of interest was whether the patients survived for at least 24 hours.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openintro)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: airports
+Loading required package: cherryblossom
+Loading required package: usdata</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flextable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'flextable'
+
+The following object is masked from 'package:purrr':
+
+    compose</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cpr)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Refactor variables to ensure the order is the same as in the textbook table</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>cpr <span class="ot">&lt;-</span> cpr <span class="sc">|&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">factor</span>(group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"control"</span>, <span class="st">"treatment"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">outcome =</span> <span class="fu">factor</span>(outcome, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"survived"</span>, <span class="st">"died"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>table_example <span class="ot">&lt;-</span> <span class="fu">proc_freq</span>(<span class="at">x =</span> cpr, </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">row =</span> <span class="st">"group"</span>, </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">col =</span> <span class="st">"outcome"</span>, </span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>                           <span class="at">include.row_percent =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>                           <span class="at">include.column_percent =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                           <span class="at">include.table_percent =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>table_example</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7d09c556{}.cl-7ce08d44{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-7cf6465c{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7cf6467a{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7cf64684{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7cf6468e{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7cf94dca{width:0.931in;background-color:transparent;vertical-align: bottom;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94de8{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94df2{width:0.574in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94df3{width:0.625in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94dfc{width:0.931in;background-color:transparent;vertical-align: bottom;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e06{width:0.854in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e07{width:0.574in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e1a{width:0.625in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e24{width:0.931in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e25{width:0.854in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e2e{width:0.574in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e38{width:0.625in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e42{width:0.931in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e4c{width:0.854in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e56{width:0.574in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e57{width:0.625in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e60{width:0.931in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e6a{width:0.854in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e6b{width:0.574in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cf94e74{width:0.625in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7d09c556"><thead><tr style="overflow-wrap:break-word;"><th rowspan="2" class="cl-7cf94dca"><p class="cl-7cf6465c"><span class="cl-7ce08d44">group</span></p></th><th colspan="3" class="cl-7cf94de8"><p class="cl-7cf6467a"><span class="cl-7ce08d44">outcome</span></p></th></tr><tr style="overflow-wrap:break-word;"><th class="cl-7cf94e06"><p class="cl-7cf6467a"><span class="cl-7ce08d44">survived</span></p></th><th class="cl-7cf94e07"><p class="cl-7cf6467a"><span class="cl-7ce08d44">died</span></p></th><th class="cl-7cf94e1a"><p class="cl-7cf6467a"><span class="cl-7ce08d44">Total</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7cf94e24"><p class="cl-7cf64684"><span class="cl-7ce08d44">control</span></p></td><td class="cl-7cf94e25"><p class="cl-7cf6468e"><span class="cl-7ce08d44">11</span><span class="cl-7ce08d44"></span></p></td><td class="cl-7cf94e2e"><p class="cl-7cf6468e"><span class="cl-7ce08d44">39</span><span class="cl-7ce08d44"></span></p></td><td class="cl-7cf94e38"><p class="cl-7cf6468e"><span class="cl-7ce08d44">50</span><span class="cl-7ce08d44"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7cf94e42"><p class="cl-7cf64684"><span class="cl-7ce08d44">treatment</span></p></td><td class="cl-7cf94e4c"><p class="cl-7cf6468e"><span class="cl-7ce08d44">14</span><span class="cl-7ce08d44"></span></p></td><td class="cl-7cf94e56"><p class="cl-7cf6468e"><span class="cl-7ce08d44">26</span><span class="cl-7ce08d44"></span></p></td><td class="cl-7cf94e57"><p class="cl-7cf6468e"><span class="cl-7ce08d44">40</span><span class="cl-7ce08d44"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7cf94e60"><p class="cl-7cf64684"><span class="cl-7ce08d44">Total</span></p></td><td class="cl-7cf94e6a"><p class="cl-7cf6468e"><span class="cl-7ce08d44">25</span><span class="cl-7ce08d44"></span></p></td><td class="cl-7cf94e6b"><p class="cl-7cf6468e"><span class="cl-7ce08d44">65</span><span class="cl-7ce08d44"></span></p></td><td class="cl-7cf94e74"><p class="cl-7cf6468e"><span class="cl-7ce08d44">90</span><span class="cl-7ce08d44"></span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<p>Note that we usually put the independent variable in the columns. However, the book does not follow this convention.</p>
+<section id="calculating-by-hand-using-r-1" class="level4" data-number="12.3.1.1">
+<h4 data-number="12.3.1.1" class="anchored" data-anchor-id="calculating-by-hand-using-r-1"><span class="header-section-number">12.3.1.1</span> Calculating ‘by hand’ using R</h4>
+<p>To calculate a 90 % confidence interval of the difference for the survival rates (<span class="math inline">\(p_{1}\)</span> and <span class="math inline">\(p_{2}\)</span>) by hand, we can write:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input (change these according to your values)</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>p_hat_1 <span class="ot">=</span> <span class="dv">14</span> <span class="sc">/</span> <span class="dv">40</span>  <span class="co"># Treatment group</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>p_hat_2 <span class="ot">=</span> <span class="dv">11</span> <span class="sc">/</span> <span class="dv">50</span>  <span class="co"># Control group</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>n_1 <span class="ot">=</span> <span class="dv">40</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>n_2 <span class="ot">=</span> <span class="dv">50</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>confidence <span class="ot">=</span> <span class="fl">0.9</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform calculations (no need to change anything here)</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>p_hat <span class="ot">=</span> p_hat_1 <span class="sc">-</span> p_hat_2</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>se <span class="ot">=</span> <span class="fu">sqrt</span>((p_hat_1<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p_hat_1)<span class="sc">/</span>n_1) <span class="sc">+</span> (p_hat_2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p_hat_2)<span class="sc">/</span>n_2))</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>z_star <span class="ot">=</span> <span class="fu">qnorm</span>((<span class="dv">1</span> <span class="sc">+</span> confidence) <span class="sc">/</span> <span class="dv">2</span>)  <span class="co"># Calculate z*-value </span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>lower <span class="ot">=</span> p_hat <span class="sc">-</span> z_star <span class="sc">*</span> se   <span class="co"># Lower bound CI</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>upper <span class="ot">=</span> p_hat <span class="sc">+</span> z_star <span class="sc">*</span> se   <span class="co"># Upper bound CI</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(lower, upper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.02707706  0.28707706</code></pre>
+</div>
+</div>
+<p>Note: we follow the order of the book and take p1 as the percentage for the treatment group and p2 as the percentage for the control group.</p>
+</section>
+<section id="summary-data-1" class="level4" data-number="12.3.1.2">
+<h4 data-number="12.3.1.2" class="anchored" data-anchor-id="summary-data-1"><span class="header-section-number">12.3.1.2</span> Summary data</h4>
+<p>When you have only summary data, i.e.&nbsp;information about the sample size and sample proportion, we recommend using <code>prop.test</code> for calculating a confidence interval for the difference between proportions in two samples. The function <code>prop.test</code> is part of the package <code>stats</code>, which is one of the few packages that R automatically loads when it starts.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">14</span>, <span class="dv">11</span>),</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">50</span>),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">conf.level =</span> <span class="fl">0.90</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">correct=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl>
+<dt><code>prop.test</code></dt>
+<dd>
+<p>This is the function that conducts a test for proportions.</p>
+</dd>
+<dt><code>x = c(14, 11)</code></dt>
+<dd>
+<p>Here we specify the number of ‘successes’ for each group (in this case the number of survivors in each group).</p>
+</dd>
+<dt><code>n = c(40, 50)</code></dt>
+<dd>
+<p>The second value specified should be the number of trials for each of the two samples (read: the number of observations in our dataset). In our case: the number of participants in both groups.</p>
+</dd>
+<dt><code>conf.level = 0.90</code></dt>
+<dd>
+<p>This determines the confidence level. The default is 0.95 which corresponds to a 95% confidence interval. We set the interval to <code>0.90</code>.</p>
+</dd>
+<dt><code>correct = FALSE</code></dt>
+<dd>
+<p>This sets the continuity correction to <code>FALSE</code>. This should provide the same results as the manual calculations above.</p>
+</dd>
+</dl>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    2-sample test for equality of proportions without continuity correction
+
+data:  c(14, 11) out of c(40, 50)
+X-squared = 1.872, df = 1, p-value = 0.1712
+alternative hypothesis: two.sided
+90 percent confidence interval:
+ -0.02707706  0.28707706
+sample estimates:
+prop 1 prop 2 
+  0.35   0.22 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="hypothesis-test-for-the-difference-between-two-proportions" class="level3" data-number="12.3.2">
+<h3 data-number="12.3.2" class="anchored" data-anchor-id="hypothesis-test-for-the-difference-between-two-proportions"><span class="header-section-number">12.3.2</span> Hypothesis test for the difference between two proportions</h3>
+<p>We use the mammogram data set from the <code>openintro</code> package. The data set contains data from an experiment where 89,835 women were randomized to either get a mammogram or a non-mammogram breast screening. The response measured was whether they had died from breast cancer within 25 years.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openintro)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flextable) </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mammogram)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Refactor variables to control the order of categories in the cross table</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>mammogram <span class="ot">&lt;-</span> mammogram <span class="sc">|&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">breast_cancer_death =</span> <span class="fu">factor</span>(breast_cancer_death, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"yes"</span>, <span class="st">"no"</span>), <span class="at">ordered=</span><span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(treatment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"mammogram"</span>, <span class="st">"control"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>table_example <span class="ot">&lt;-</span> <span class="fu">proc_freq</span>(<span class="at">x =</span> mammogram, </span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>                           <span class="at">row =</span> <span class="st">"treatment"</span>, </span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>                           <span class="at">col =</span> <span class="st">"breast_cancer_death"</span>, </span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>                           <span class="at">include.row_percent =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>                           <span class="at">include.column_percent =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>                           <span class="at">include.table_percent =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>table_example</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-7db9baf6{}.cl-7da0b010{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-7daa6f56{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7daa6f74{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7daa6f7e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7daa6f7f{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-7daaa660{width:1.185in;background-color:transparent;vertical-align: bottom;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa66a{width:0.668in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa674{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa67e{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa688{width:1.185in;background-color:transparent;vertical-align: bottom;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa689{width:0.668in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa692{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa693{width:0.752in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa69c{width:1.185in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6a6{width:0.668in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6a7{width:0.752in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6b0{width:0.752in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6ba{width:1.185in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6c4{width:0.668in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6c5{width:0.752in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6ce{width:0.752in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6d8{width:1.185in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6e2{width:0.668in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6e3{width:0.752in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 1pt solid rgba(102, 102, 102, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7daaa6ec{width:0.752in;background-color:transparent;vertical-align: top;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 1pt solid rgba(102, 102, 102, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-7db9baf6"><thead><tr style="overflow-wrap:break-word;"><th rowspan="2" class="cl-7daaa660"><p class="cl-7daa6f56"><span class="cl-7da0b010">treatment</span></p></th><th colspan="3" class="cl-7daaa66a"><p class="cl-7daa6f74"><span class="cl-7da0b010">breast_cancer_death</span></p></th></tr><tr style="overflow-wrap:break-word;"><th class="cl-7daaa689"><p class="cl-7daa6f74"><span class="cl-7da0b010">yes</span></p></th><th class="cl-7daaa692"><p class="cl-7daa6f74"><span class="cl-7da0b010">no</span></p></th><th class="cl-7daaa693"><p class="cl-7daa6f74"><span class="cl-7da0b010">Total</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-7daaa69c"><p class="cl-7daa6f7e"><span class="cl-7da0b010">mammogram</span></p></td><td class="cl-7daaa6a6"><p class="cl-7daa6f7f"><span class="cl-7da0b010">500</span><span class="cl-7da0b010"></span></p></td><td class="cl-7daaa6a7"><p class="cl-7daa6f7f"><span class="cl-7da0b010">44,425</span><span class="cl-7da0b010"></span></p></td><td class="cl-7daaa6b0"><p class="cl-7daa6f7f"><span class="cl-7da0b010">44,925</span><span class="cl-7da0b010"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7daaa6ba"><p class="cl-7daa6f7e"><span class="cl-7da0b010">control</span></p></td><td class="cl-7daaa6c4"><p class="cl-7daa6f7f"><span class="cl-7da0b010">505</span><span class="cl-7da0b010"></span></p></td><td class="cl-7daaa6c5"><p class="cl-7daa6f7f"><span class="cl-7da0b010">44,405</span><span class="cl-7da0b010"></span></p></td><td class="cl-7daaa6ce"><p class="cl-7daa6f7f"><span class="cl-7da0b010">44,910</span><span class="cl-7da0b010"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-7daaa6d8"><p class="cl-7daa6f7e"><span class="cl-7da0b010">Total</span></p></td><td class="cl-7daaa6e2"><p class="cl-7daa6f7f"><span class="cl-7da0b010">1,005</span><span class="cl-7da0b010"></span></p></td><td class="cl-7daaa6e3"><p class="cl-7daa6f7f"><span class="cl-7da0b010">88,830</span><span class="cl-7da0b010"></span></p></td><td class="cl-7daaa6ec"><p class="cl-7daa6f7f"><span class="cl-7da0b010">89,835</span><span class="cl-7da0b010"></span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>This table is the same as Table 6.2 on p.&nbsp;219.</p>
+<section id="calculation-by-hand-using-r" class="level4" data-number="12.3.2.1">
+<h4 data-number="12.3.2.1" class="anchored" data-anchor-id="calculation-by-hand-using-r"><span class="header-section-number">12.3.2.1</span> Calculation by hand using R</h4>
+<p>To test the hypothesis whether there was a difference in breast cancer deaths in the two groups by hand, we can write:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input (change these according to your values)</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>p_hat_1 <span class="ot">=</span> <span class="dv">500</span> <span class="sc">/</span> (<span class="dv">500</span> <span class="sc">+</span> <span class="dv">44425</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>p_hat_2 <span class="ot">=</span> <span class="dv">505</span> <span class="sc">/</span> (<span class="dv">505</span> <span class="sc">+</span> <span class="dv">44405</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>n_1 <span class="ot">=</span> <span class="dv">500</span> <span class="sc">+</span> <span class="dv">44425</span> <span class="co">#this is the total number of subjects in the first group</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>n_2 <span class="ot">=</span> <span class="dv">505</span> <span class="sc">+</span> <span class="dv">44405</span> <span class="co">#this is the total number of subjects in the second group</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>null_value <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform calculations (no need to change anything here)</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>p_hat_pooled <span class="ot">=</span> (p_hat_1 <span class="sc">*</span> n_1 <span class="sc">+</span> p_hat_2 <span class="sc">*</span> n_2) <span class="sc">/</span> (n_1 <span class="sc">+</span> n_2)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>point_est <span class="ot">=</span> p_hat_1 <span class="sc">-</span> p_hat_2</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>se <span class="ot">=</span> <span class="fu">sqrt</span>((p_hat_pooled<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p_hat_pooled)<span class="sc">/</span>n_1)<span class="sc">+</span>(p_hat_pooled<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p_hat_pooled)<span class="sc">/</span>n_2))</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>z <span class="ot">=</span> (point_est <span class="sc">-</span> null_value)<span class="sc">/</span>se</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.434892</code></pre>
+</div>
+</div>
+<p>The lower tail area is 0.4349 (small difference compared to the book due to rounding). The p-value, represented by both tails together, is 0.434892*2 = 0.869784. Because this value <span class="math inline">\(p &gt; 0.05\)</span>, we do not reject the null hypothesis.</p>
+<p>We can visualize this as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(visualize)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">visualize.norm</span>(<span class="at">stat =</span> <span class="fu">c</span>(<span class="sc">-</span>z, z), <span class="at">section =</span> <span class="st">"tails"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_06_proportions_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-data-2" class="level4" data-number="12.3.2.2">
+<h4 data-number="12.3.2.2" class="anchored" data-anchor-id="summary-data-2"><span class="header-section-number">12.3.2.2</span> Summary data</h4>
+<p>Alternatively, we can use the R function <code>prop.test()</code> to test for the difference between the two groups. We used this function in week 4 already for the calculation of a single proportion. The function <code>prop.test</code> is part of the package <code>stats</code>, which is one of the few packages that R automatically loads when it starts. For our purpose, we use it as follow:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">prop.test</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">500</span>, <span class="dv">505</span>), </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> <span class="fu">c</span>(<span class="dv">44925</span>, <span class="dv">44910</span>),</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">alternative =</span> <span class="st">"two.sided"</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">correct =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    2-sample test for equality of proportions without continuity correction
+
+data:  c(500, 505) out of c(44925, 44910)
+X-squared = 0.026874, df = 1, p-value = 0.8698
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ -0.001490590  0.001260488
+sample estimates:
+    prop 1     prop 2 
+0.01112966 0.01124471 </code></pre>
+</div>
+</div>
+<dl>
+<dt><code>prop.test(</code></dt>
+<dd>
+<p>This is the function that conducts a test for a proportion.</p>
+</dd>
+<dt><code>x = c(500, 505),</code></dt>
+<dd>
+<p>Here we indicate the number of cases that are in our two groups. In this example, 500 patients who received a mammogram and died and 505 patients who did not receive a mammogram and died. Because these are two values, we combine them using ‘c()’.</p>
+</dd>
+<dt><code>n = c(44925, 44910),</code></dt>
+<dd>
+<p>The second value specified should be the total number of trials. In our case: the total number of patients in the two groups. Because these are two values, we combine them using ‘c()’.</p>
+</dd>
+<dt><code>alternative = "two.sided"</code></dt>
+<dd>
+<p>Determine whether we want to use a two sided-test, or a one-sided test. Options are “two.sided” (default), “less” (when <span class="math inline">\(H_1: \mu &lt; p\)</span>) or “greater” (when <span class="math inline">\(H_1: \mu &gt; p\)</span>).</p>
+</dd>
+<dt><code>correct = FALSE)</code></dt>
+<dd>
+<p>With this, we indicate that we do not want to calculate the confidence interval using a ‘continuity correction’. By default, this value is set to ‘TRUE’.</p>
+</dd>
+</dl>
+</section>
+<section id="data-in-a-data-frame" class="level4" data-number="12.3.2.3">
+<h4 data-number="12.3.2.3" class="anchored" data-anchor-id="data-in-a-data-frame"><span class="header-section-number">12.3.2.3</span> Data in a data frame</h4>
+<p>If you have a data frame with a variable that, for each case, represents one of two possible outcomes (in statistical terms “success” and “failure”), we can use <code>prop.test</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="fu">table</span>(mammogram<span class="sc">$</span>treatment, mammogram<span class="sc">$</span>breast_cancer_death), </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">alternative =</span> <span class="st">"two.sided"</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">correct =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    2-sample test for equality of proportions without continuity correction
+
+data:  table(mammogram$treatment, mammogram$breast_cancer_death)
+X-squared = 0.026874, df = 1, p-value = 0.8698
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ -0.001490590  0.001260488
+sample estimates:
+    prop 1     prop 2 
+0.01112966 0.01124471 </code></pre>
+</div>
+</div>
+<dl>
+<dt><code>prop.test(table(mammogram$treatment, mammogram$breast_cancer_death),</code></dt>
+<dd>
+<p>This is the function that conducts a test for a proportion. We select the independent variable (<code>mammogram$treatment</code>) and dependent variable (<code>mammogram$breast_cancer_death</code>). Note that the order of the variables matters for the confidence interval: so list the independent first and then the dependent variable.</p>
+</dd>
+<dt><code>alternative = "two.sided"</code></dt>
+<dd>
+<p>Determine whether we want to use a two sided-test, or a one-sided test. Options are “two.sided” (default), “less” (when <span class="math inline">\(H_1: \mu &lt; p\)</span>) or “greater” (when <span class="math inline">\(H_1: \mu &gt; p\)</span>).</p>
+</dd>
+<dt><code>correct = FALSE</code></dt>
+<dd>
+<p>With this, we indicate that we do not want to calculate the confidence interval using a ‘continuity correction’. By default, this value is set to ‘TRUE’.</p>
+</dd>
+</dl>
+<p>The results are identical to the example above that used the summary data.</p>
+</section>
+</section>
+</section>
+<section id="reporting-the-results-from-a-hypothesis-test-for-the-difference-in-two-proportions" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="reporting-the-results-from-a-hypothesis-test-for-the-difference-in-two-proportions"><span class="header-section-number">12.4</span> Reporting the results from a hypothesis test for the difference in two proportions</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define input (change these according to your values)</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>p_hat_1 <span class="ot">=</span> <span class="dv">70</span> <span class="sc">/</span> <span class="dv">330</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>p_hat_2 <span class="ot">=</span> <span class="dv">90</span> <span class="sc">/</span> <span class="dv">470</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>n_1 <span class="ot">=</span> <span class="dv">330</span> <span class="co">#this is the total number of subjects in the first group</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>n_2 <span class="ot">=</span> <span class="dv">470</span> <span class="co">#this is the total number of subjects in the second group</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>null_value <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform calculations (no need to change anything here)</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>p_hat_pooled <span class="ot">=</span> (p_hat_1 <span class="sc">*</span> n_1 <span class="sc">+</span> p_hat_2 <span class="sc">*</span> n_2) <span class="sc">/</span> (n_1 <span class="sc">+</span> n_2)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>point_est <span class="ot">=</span> p_hat_1 <span class="sc">-</span> p_hat_2</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>se <span class="ot">=</span> <span class="fu">sqrt</span>((p_hat_pooled<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p_hat_pooled)<span class="sc">/</span>n_1)<span class="sc">+</span>(p_hat_pooled<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p_hat_pooled)<span class="sc">/</span>n_2))</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>z <span class="ot">=</span> (point_est <span class="sc">-</span> null_value)<span class="sc">/</span>se</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7181896</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">*</span><span class="fu">pnorm</span>(<span class="at">q=</span>z, <span class="at">lower.tail=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4726404</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Results using prop.test</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">70</span>, <span class="dv">90</span>), </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> <span class="fu">c</span>(<span class="dv">330</span>, <span class="dv">470</span>),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">alternative =</span> <span class="st">"two.sided"</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">correct =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    2-sample test for equality of proportions without continuity correction
+
+data:  c(70, 90) out of c(330, 470)
+X-squared = 0.5158, df = 1, p-value = 0.4726
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ -0.03603276  0.07729646
+sample estimates:
+   prop 1    prop 2 
+0.2121212 0.1914894 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Output explanation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>the probability of finding the observed (<span class="math inline">\(z\)</span> or <span class="math inline">\(\chi^2\)</span>, given the null hypothesis (<em>p</em>-value) is given as follows:
+<ul>
+<li>in R, see p-value = 0.009823. Note: If the value is very close to zero, R may use the scientific notation for small numbers (e.g.&nbsp;2.2e-16 is the scientific notation of 0.00000000000000022). In these cases, write p &lt; 0.001 in your report.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<section id="reporting-1" class="level4" data-number="12.4.0.1">
+<h4 data-number="12.4.0.1" class="anchored" data-anchor-id="reporting-1"><span class="header-section-number">12.4.0.1</span> Reporting</h4>
+<p>If you calculate the results by hand and obtain a z-score, then the correct report includes:</p>
+<ul>
+<li>A conclusion about the null hypothesis; followed by</li>
+<li>Information about the sample percentage and the population percentage.</li>
+<li><span class="math inline">\(z\)</span> = the value of z.</li>
+<li>p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+<ul>
+<li>in R, small values may be displayed using the scientific notation (e.g.&nbsp;2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p &lt; 0.001 in your report.</li>
+</ul></li>
+</ul>
+<p>If you calculate the results using prop.test and obtain a <span class="math inline">\(\chi^2\)</span>-score, then the correct report includes:</p>
+<ul>
+<li>A conclusion about the null hypothesis; followed by</li>
+<li>Information about the sample percentage and the population percentage.</li>
+<li><span class="math inline">\(\chi^2\)</span> = the value of chi-square, followed by the degrees of freedom in brackets.</li>
+<li>p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+<ul>
+<li>in R, small values may be displayed using the scientific notation (e.g.&nbsp;2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p &lt; 0.001 in your report.</li>
+</ul></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Report
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>✓ There is no statistically significant difference between the percentage of citizens who were somewhat dissatisfied with democracy before the election (21.21%, n = 330) and after the election (19.14%, n = 470), z = 0.72, p = 0.47.</p>
+<p>✓ There is no statistically significant difference between the percentage of citizens who were somewhat dissatisfied with democracy before the election (21.21%, n = 330) and after the election (19.14%, n = 470), <span class="math inline">\(\chi^2\)</span> (1) = 0.51, p = 0.47.</p>
+</div>
+</div>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>If you really like pipes, you can also use: <code>example_data |&gt; pull(party_choice) |&gt; table()</code> .<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>If you would like to calculate the confidence interval for the second category, you can use, for example, <code>relevel</code> to re-order the categories of the first variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="fu">table</span>(<span class="fu">relevel</span>(example_data<span class="sc">$</span>party_choice, <span class="at">ref =</span> <span class="st">"Other party"</span>)),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test with continuity correction
+
+data:  table(relevel(example_data$party_choice, ref = "Other party")), null probability 0.5
+X-squared = 290.52, df = 1, p-value &lt; 2.2e-16
+alternative hypothesis: true p is not equal to 0.5
+95 percent confidence interval:
+ 0.7423954 0.7954986
+sample estimates:
+   p 
+0.77 </code></pre>
+</div>
+</div>
+<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></li>
+<li id="fn3"><p>This uses a slightly more complicated formula for calculating the confidence interval (Wilson score interval), also incorporating a ‘continutiy correction’ (which accounts for the fact that we are using a continuous normal distribution to approximate a discrete phenomenon, i.e.&nbsp;the number of successes)<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./analysis_05_normal_distribution.html" class="pagination-link  aria-label=" &lt;span="" distribution&lt;="" span&gt;"="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Normal distribution</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./analysis_07_chi_squared.html" class="pagination-link" aria-label="<span class='chapter-number'>13</span>&nbsp; <span class='chapter-title'>Chi-squared and measures of association</span>">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Chi-squared and measures of association</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
