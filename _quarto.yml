@@ -4,7 +4,7 @@ project:
 book:
   title: "Statistical analysis and presentation using R"
   subtitle: "An overview of R functions used in Statistics I"
-  author: "Tom Louwerse & Tim Mickler"
+  author: ["Tom Louwerse", "Tim Mickler"]
   date: "2024-02-01"
   chapters:
     - index.qmd
