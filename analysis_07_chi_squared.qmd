@@ -1,0 +1,588 @@
+# Chi-squared and measures of association {#sec-analysis-chi-squared}
+
+## Chi-square test for a one-way table
+
+In R, the function `chisq.test` performs chi-square tests.
+
+We can use a chi-square test to determine if a sample is representative of the general population. In the book, data from a random sample of 275 jurors in a small county is presented. Assume we have such a one-way table which shows frequency counts for a categorical variable and the population proportion. In this case, we can calculate the chi-square test as follows:
+
+```{r}
+# Openintro example from p. 229 - 235
+chisq <- chisq.test(x = c(205, 26, 25, 19), 
+                    p = c(0.72, 0.07, 0.12, 0.09))
+```
+
+`chisq <- chisq.test(`
+
+:   This conducts a chi-square test and stores the results in an object called `chisq`. You can choose a different name for `chisq`.
+
+`x = c(205, 26, 25, 19),`
+
+:   These are the selected jurors (same data as presented in the book).
+
+`p = c(0.72, 0.07, 0.12, 0.09))`
+
+:   These are the population proportions.
+
+We can see the results by looking at the object `chisq`.
+
+```{r}
+chisq
+```
+
+The output indicates the title of the test, which variables have been used, the $\chi^2$ test statistic, the degrees of freedom and the p-value.
+
+You can get the expected frequencies via:
+
+```{r}
+chisq$expected
+```
+
+`chisq$expected`
+
+:   This gives you a vector with expected frequencies. If you have chosen an different name for `chisq`, change it here as well.
+
+## Chi-square test for a contingency table
+
+We demonstrate the use of chi-square test for a contingency table with two variables from the 2019 Canadian Election Study:
+
+```{r, eval=FALSE}
+# Loading the data sets
+library(rio)
+canada <- import("2019 Canadian Election Study.rds")
+```
+
+```{r}
+#| echo: false
+library(rio)
+canada <- import("data/2019 Canadian Election Study.rds")
+```
+
+
+The first variable `cps19_fed_gov_sat` measures the general satisfaction with the government and the second variable measures the overall satisfaction with democracy (`cps19_demsat`).
+
+First, we treat the answer option "Don't know/ Prefer not to answer" as missing data (see section 'Recoding missing data' in week 4).
+
+```{r, eval = TRUE, include=TRUE}
+library(tidyverse) # Load tidyverse for data operations
+library(flextable) # Load flextable for frequency table
+
+# Define missing values and drop factor levels that are not present in the data
+canada <- canada |>
+  mutate(cps19_fed_gov_sat = na_if(cps19_fed_gov_sat, "Don't know/ Prefer not to answer")) |>
+  mutate(cps19_demsat = na_if(cps19_demsat, "Don't know/ Prefer not to answer")) |>
+  mutate(cps19_fed_gov_sat = droplevels(cps19_fed_gov_sat)) |>
+  mutate(cps19_demsat = droplevels(cps19_demsat))
+
+#Create a contingency table
+table_example <- proc_freq(x = canada, 
+                           row = "cps19_demsat", 
+                           col = "cps19_fed_gov_sat", 
+                           include.row_percent = FALSE, 
+                           include.table_percent = FALSE) 
+table_example
+```
+
+To calculate $\chi^2$, we use the `chisq.test()` function.
+
+```{r, eval=TRUE}
+chisq <- chisq.test(canada$cps19_demsat, canada$cps19_fed_gov_sat)
+chisq
+```
+
+`chisq <- chisq.test(`
+
+:   This conducts a chi-square test and stores the results in an object called `chisq`. You can choose a different name for `chisq`.
+
+`canada$cps19_demsat, canada$cps19_fed_gov_sat)`
+
+:   We indicate the two variables that we want to use. Note that you have to use the dollar sign notation here, i.e. `<dataset>$<variable>`
+
+The output indicates the title of the test, which variables have been used, the $\chi^2$ test statistic, the degrees of freedom and the p-value.
+
+Note that the $\chi^2$ value might be rounded if it is very large (of it is larger than 5 digits). In any case, you can get the exact $\chi^2$ value by writing:
+
+```{r}
+chisq$statistic 
+```
+
+You can get the expected frequencies via:
+
+```{r}
+chisq$expected
+```
+
+`chisq$expected`
+
+:   This gives you a table with expected frequencies. If you have chosen an different name for `chisq`, change it here as well. Depending on your screen size, the table might be broken into different parts (see 'Not at all satisfied').
+
+### When expected frequencies are small
+
+If the smallest expected frequencies is lower than 5, you can either:
+
+-   combine some levels with a small number of observations to increase the number of observations in these subgroups, or
+-   use alternative tests, such as the Fisher's exact test.
+
+Assume you have the following `data` of 20 countries for which we have gathered data on their OECD membership and their economic development:
+
+```{r}
+# Define dataset
+data <- data.frame(oecd = c(rep("no", 9), rep("no", 1), rep("yes", 2), rep("yes", 8)), 
+                   econ = c(rep("low", 9), rep("high", 1), rep("low", 2), rep("high", 8)))
+# Print a cross table of the two variables in data
+table(data$econ, data$oecd)
+```
+
+The expected frequencies in some of the cells will be \< 5.
+
+We can calculate the $\chi^2$ value with `chisq.test()` as we did previously:
+
+```{r}
+chisq <- chisq.test(data$econ, data$oecd)
+chisq
+```
+
+The output indicates that R automatically calculates 'Pearson's Chi-squared test with Yates' continuity correction' (see the title of the test). The rest of the output stays the same (which variables have been used, the $\chi^2$ test statistic, the degrees of freedom and the p-value). However, Yates continuity correction is not our preferred option.
+
+> In some instances, R may give you a warning such as "Chi-squared approximation may be incorrect". This means that the expected values will be **very** small and therefore the approximations of p may not be right.
+
+Instead, we want to conduct our independence test for a small sample with the Fisher's exact test. To perform this test in R, use the `fisher.test()` function as you would do for the Chi-square test:
+
+```{r}
+fisher.t <- fisher.test(data$econ, data$oecd)
+fisher.t
+```
+
+`fisher.test <- fisher.test(`
+
+:   This conducts the Fisher's exact test and stores the results in an object called `fisher.t`. You can choose a different name for `fisher.t`.
+
+`fisher.test(data$econ, data$oecd)`
+
+:   We mention the two variables for the function `fisher.test()`.
+
+The output indicates the title of the test, which variables have been used and the p-value. We report the output with a statement about the null hypothesis followed by (*p = p-value, Fisher's exact test*)
+
+## Reporting a Chi square test and Fisher's Exact Test
+
+In a scientific paper, you do not include the output from the statistical program (R, SPSS) but report the results in the text. For this example. we use the following data:
+
+![](docs/chi_data.png){width="80%"}
+
+```{r, echo = FALSE, include=FALSE}
+library(DescTools)
+
+0.816*434
+0.184*434
+
+0.605*681
+0.395*681
+
+0.409*281
+0.591*281
+
+dat <- data.frame(
+  "col1" = c(115, 166),                     #first column
+  "col2" = c(412, 269),                    #second column
+  "col3" = c(354, 80),                    #third column
+  row.names = c("Political Science", "IRO"),
+  stringsAsFactors = FALSE
+)
+colnames(dat) <- c("Dog", "Cat", "Bird")
+dat
+# create dataframe from contingency table
+x <- c()
+for (row in rownames(dat)) {
+  for (col in colnames(dat)) {
+    x <- rbind(x, matrix(rep(c(row, col), dat[row, col]), ncol = 2, byrow = TRUE))
+  }
+}
+df <- as.data.frame(x)
+str(df)
+colnames(df) <- c("study_choice", "pet_choice") #
+df
+
+library(flextable) 
+chi2_example <- proc_freq(x = df, 
+                           row = "study_choice", 
+                           col = "pet_choice", 
+                           include.row_percent = FALSE, 
+                           include.table_percent = FALSE) 
+
+save_as_docx(chi2_example, path = "docs/table_chi2_example.docx")
+
+chisq <- chisq.test(df$study_choice, df$pet_choice)
+```
+
+*Example output R (do not include the output directly in an academic paper):*
+
+```{r, echo=TRUE, include = TRUE}
+chisq <- chisq.test(df$study_choice, df$pet_choice)
+
+chisq
+```
+
+
+::: callout-note
+#### Output explanation
+
+* 124.9 is the observed chi square value ($\chi^2$).
+* df is the degrees of freedom (here: 2).
+* the probability of finding the observed ($\chi^2$, given the null hypothesis (*p*-value) is given as follows:
+  + in R, see p-value < 2.2e-16. 2.2e-16 is the scientific notation of 0.00000000000000022. This means the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p < 0.001 in your report.
+  <!-- + in SPSS you can see the *p*-value under 'Asymptotic Significance (2-sided)'. When working with SPSS, you should report the exact p-value that is displayed. But: never write p=0.000. In this example the value that is displayed is 0.000 which means that p < 0.0005. In these cases, write p < 0.001 in your report. -->
+
+Note: If you calculate the results by hand you write p < "the chosen $\alpha$-value", for example, p < 0.05.
+:::
+
+#### Reporting
+
+The correct report includes:
+
+* A conclusion about the null hypothesis; followed by
+* $\chi^2$(df) = the value of chi square and the degrees of freedom in brackets. The degrees of freedom is calculated as (number of rows -- 1)\*( number of columns-- 1) and can be obtained from the output.
+* p = p-value. When working with statistical software, you should report the exact p-value that is displayed. 
+  + in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p < 0.001 in your report.
+  <!-- + in SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
+
+Note: If you calculate the results by hand you write p < "the chosen $\alpha$-value", for example, p < 0.05.
+
+::: callout-tip
+#### Report
+
+✓ There is a significant relationship between the type of pet a respondent wants and the choice of study program ($\chi^2$(2) = 124.9, p$<$ 0.001)
+:::
+
+## Fisher's Exact Test
+
+Fisher's Exact Test should be used in the case of small expected frequencies. Assume you have the following `data` of 20 countries for which we have gathered data on their OECD membership and their economic development:
+
+```{r, echo=FALSE}
+
+data <- data.frame(oecd = c(rep("no", 9), rep("no", 1), rep("yes", 2), rep("yes", 8)), 
+                   econ = c(rep("low", 9), rep("high", 1), rep("low", 2), rep("high", 8)))
+# Print a cross table of the two variables in data
+table(data$econ, data$oecd)
+```
+
+*Example output R (do not include the output directly in an academic paper):*
+
+```{r, echo=TRUE, include=TRUE}
+fisher.test(data$econ, data$oecd)
+```
+
+<!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
+
+<!-- ![](docs/fisher_spss.png) -->
+
+#### Reporting
+
+For Fisher's Exact test, simply write a statement about the null hypothesis followed by the *p*-value (e.g. p = p-value, Fisher's exact test).
+
+::: callout-tip
+#### Report
+
+✓ There is a significant relationship between the membership status of a country to the OECD and its economic development, p $=$ 0.005, Fisher's exact test).
+:::
+
+## Measures of association
+
+### Phi/Cramér's V
+
+Phi and Cramér's V are measures of the strength of association between two nominal or ordinal variables. They range from 0 to 1. The `DescTools` package contains the functions `Phi` (with a capital P) and `CramerV` (with a capital C and a capital V). If it is not yet installed you can do so via `install.packages("DescTools")`.
+
+```{r}
+library(DescTools)
+```
+
+You can then calculate the measure of association. Note that you can only use the function `Phi` for 2x2 cross-tables. `CramerV` works for 2x2 cross-tables (which will give the same result as `Phi`) and larger cross-tables (Cramér's V).
+
+```{r}
+Phi(data$econ, data$oecd) #2x2 cross-table
+CramerV(data$econ, data$oecd) #2x2 cross-table
+CramerV(canada$cps19_demsat, canada$cps19_fed_gov_sat) #larger cross-table
+```
+
+### Goodman-Kruskal's Lambda
+
+Goodman-Kruskal's Lambda ($\lambda$) can be calculated using a function from the `DescTools` package.
+
+```{r}
+library(DescTools)
+```
+
+We use Lambda for any sample with an independent variable and a dependent variable. We demonstrate its use with two variables from the 2019 Canadian Election Study. As independent variable we use a variable regarding the respondents' gender (`cps19_gender`) and as dependent variable we use party the respondent intents to vote for (`cps19_votechoice`). We again treat the answer option "Don't know/ Prefer not to answer" as missing data.
+
+```{r, eval = TRUE, include=TRUE}
+# Define missing values and drop factor levels that are not present in the data
+canada <- canada |>
+  mutate(cps19_votechoice = na_if(cps19_votechoice, "Don't know/ Prefer not to answer")) |>
+  mutate(cps19_votechoice = droplevels(cps19_votechoice)) 
+
+#Create a contingency table
+table_example <- proc_freq(x = canada, 
+                           row = "cps19_votechoice", 
+                           col = "cps19_gender", 
+                           include.row_percent = FALSE, 
+                           include.table_percent = FALSE) 
+table_example
+```
+
+To calculate Lambda, write:
+
+```{r, eval = TRUE, include=TRUE}
+Lambda(x = canada$cps19_votechoice, 
+       y = canada$cps19_gender,
+       direction = "row")
+```
+
+`Lambda`
+
+:   This calculates Goodman-Kruskal's Lambda. Make sure to use a capital 'L' for the function.
+
+`x = canada$cps19_votechoice`
+
+:   Include the variable that is in the **rows** here (the dependent variable).
+
+`y = canada$cps19_gender`
+
+:   Include the variable that is in the **columns** here (the independent variable).
+
+`direction = "row"`
+
+:   Direction can take three values: `"symmetric"` (default), `"row"` or `"column"`. If our dependent variable is in the rows, we suggest to set this to `row`, which calculates the improvement in predicting the row variable if we have information about the column variable.
+
+#### Goodman-Kruskal's Gamma
+
+Goodman-Kruskal's Gamma ($\gamma$) can also be calculated using a function from the `DescTools` package.
+
+Goodman-Kruskal's Gamma is appropriate only when both variables lie on an ordinal scale. We use the two variables from above (the general satisfaction with the government and the overall satisfaction with democracy). To calculate it, write:
+
+```{r, eval = TRUE, include=TRUE}
+GoodmanKruskalGamma(canada$cps19_demsat, canada$cps19_fed_gov_sat)
+```
+
+`GoodmanKruskalGamma(`
+
+:   This calculates Goodman-Kruskal's Gamma Make sure to write the whole function correctly (including capitalization).
+
+`canada$cps19_demsat, canada$cps19_fed_gov_sat)`
+
+:   The two variables that we use for our calculation. The order of the variable names does not matter for the calculation but it is best to keep the same order as usual.
+
+> The order of values is very important for the calculation of Gamma. Therefore, always check whether the categories in the variables are in the correct order (for example by making a cross table).
+
+## Reporting measures of association for categorical variables
+
+If you want to include a measure of association for the test result, you can add this to the report.
+
+### Phi ($\phi$) and Cramér's V
+
+R will directly provide you with the value of Phi ($\phi$) and Cramér's V when you use the functions `Phi()` and `CramerV()`.
+
+*Example output R (do not include the output directly in an academic paper):*
+
+For the OECD data, the value of Phi is:
+
+```{r, echo=TRUE, include=TRUE}
+Phi(data$econ, data$oecd) #2x2 cross-table
+```
+
+For the data concerning study choice and pet choice, the value of Cramér's V is:
+
+```{r, echo=TRUE, include=TRUE}
+CramerV(df$study_choice, df$pet_choice) #larger cross-table
+```
+
+<!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
+
+<!-- ![](docs/phi_spss_oecd.png) -->
+
+<!-- :   Output for the data concerning OECD membership and economic development -->
+
+<!-- ![](docs/phi_spss.png) -->
+
+<!-- :   Output for the data concerning study choice and pet choice -->
+
+
+::: callout-warning
+#### Interpretation
+
+Phi ($\phi$) runs from 0 to 1, where:
+
+-   0 is no relationship.
+-   1 is a perfect association. Visually, in such cases all of your observations fall along the diagonal cells in the cross table.
+
+Researchers typically use Cohen's guidelines of interpreting the magnitude of $\phi$ [@cohen1988]:
+
+-   A value of at least **0.1** represents a **small** association.
+
+-   A value of at least **0.3** represents a **medium** association.
+
+-   A value of at least **0.5** represents a **large** association.
+
+The interpretation of Cramér's V is the same as for Phi ($\phi$). It runs from 0 to 1 and researchers typically use Cohen's guidelines of interpreting the magnitude. Squaring ($\phi$) and Cramér's V will give you the approximate amount of shared variance between the two variables.
+
+Note that these guidelines are "crude estimates" for interpreting strengths of relationships. As always with rules of thumbs, be careful and consider the type of data that you are working with.
+:::
+
+#### Reporting
+
+Phi ($\phi$) and Cramér's V are usually included after the chi-squared test, for example:
+
+::: callout-tip
+##### Report $\phi$
+
+✓ There is a significant relationship between the OECD membership status of a country and the country's economic development, $\chi^2$(1) = 9.90, *p* = 0.01. This represents a large association, $\phi$ = 0.704.
+
+##### Report Cramér's V
+
+✓ There is a significant relationship between the type of pet a respondent wants and the choice of study program ($\chi^2$(2) = 124.9, p$<$ 0.001). This represents a medium association, Cramér's V = 0.299.
+:::
+
+### Goodman & Kruskal's Lambda ($\lambda$).
+
+Lambda is an asymmetrical measure of association. This means that the value may vary depending on which variable is considered the independent variable and which the dependent variable. In the example above the study choice was the dependent variable.
+
+*Example output R (do not include the output directly in an academic paper):*
+
+R will directly provide you with the value of Lambda ($\lambda$) when you use the function `Lambda()`.
+
+```{r, echo=TRUE, include = TRUE}
+Lambda(table(df$study_choice, df$pet_choice),
+       direction = "row")
+
+```
+
+<!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
+
+<!-- ![](docs/lambda_spss.png) -->
+
+<!-- ::: callout-note -->
+<!-- #### Output explanation -->
+
+<!-- -   Note for the SPSS output: You must check the correct row, depending on which variable is the dependent variable. In this case 'What do you study?' is the dependent variable. -->
+<!-- ::: -->
+
+::: callout-warning
+#### Interpretation
+
+The range of Lambda runs from 0.0 to 1.0. Because it is a measure of proportional reduction in error, a lambda of 0.xx indicates that we make xx% less errors when we have information about the independent variable (compared to when we do not have this information).
+
+A lambda of 0.0 indicates that there is nothing to be gained by using the independent variable to predict the dependent variable. A lambda of 1.0 indicates that the independent variable perfectly predicts of the dependent variable. In other words, by using the independent variable as a predictor, we can predict the dependent variable without any error.
+
+There is no formal way to determine if the value for $\lambda$ is high or low, and the rules of thumb often depend on the field (e.g. biology, medicine, business, etc.). Rea and Parker (1992) suggest the following:
+
+-   ± 0.00 < 0.10 - Negligible
+
+-   ± 0.10 < 0.20 - Weak
+
+-   ± 0.20 < 0.40 - Moderate
+
+-   ± 0.40 < 0.60 - Relatively strong
+
+-   ± 0.60 < 0.80 - Strong
+
+-   ± 0.80 < 1.00 - Very strong
+:::
+
+#### Reporting
+
+::: callout-tip
+#### Report
+
+✓ There is a weak relationship between the type of pet a respondent wants and the choice of study program λ = 0.099.
+:::
+
+### Goodman & Kruskal's Gamma ($\gamma$)
+
+Goodman-Kruskal's Gamma ($\gamma$) is appropriate only when both variables lie on an ordinal scale. Gamma is defined as an symmetrical measure of association which means that you will get the same value for $\gamma$ if you switch the dependent and independent variable in your contingency stable. We demonstrate $\gamma$ using two ordinal variables on class ranks and alcohol consumption of students.
+
+![](docs/table_gamma.png)
+
+*Example output R (do not include the output directly in an academic paper):*
+
+R will directly provide you with the value of Gamma ($\gamma$) when you use the functions `GoodmanKruskalGamma()`.
+
+```{r, echo = FALSE, include=FALSE}
+gammadata <- data.frame(
+  "col1" = c(54, 24, 18),                     #first column
+  "col2" = c(46, 25, 42),                    #second column
+  "col3" = c(22, 41, 50),                    #third column
+  "col4" = c(12, 48, 32),                    #third column
+  row.names = c("Never", "Seldom", "Frequently"),
+  stringsAsFactors = FALSE
+)
+colnames(gammadata) <- c("Freshman", "Sophomore", "Junior", "Senior")
+gammadata
+# create dataframe from contingency table
+x <- c()
+for (row in rownames(gammadata)) {
+  for (col in colnames(gammadata)) {
+    x <- rbind(x, matrix(rep(c(row, col), gammadata[row, col]), ncol = 2, byrow = TRUE))
+  }
+}
+gammadf <- as.data.frame(x)
+str(gammadf)
+colnames(gammadf) <- c("alcohol", "class_rank") #
+gammadf
+
+gammadf <- gammadf |>
+  mutate(class_rank = factor(class_rank, levels = c("Freshman", "Sophomore", "Junior", "Senior"), ordered = TRUE)) |>
+  mutate(alcohol = factor(alcohol, levels = c("Never", "Seldom", "Frequently"), ordered = TRUE))
+
+library(flextable) 
+gamma_example <- proc_freq(x = gammadf, 
+                           row = "alcohol", 
+                           col = "class_rank", 
+                           include.row_percent = FALSE, 
+                           include.table_percent = FALSE) 
+
+save_as_docx(gamma_example, path = "docs/table_gamma_example.docx")
+```
+
+```{r, echo=TRUE, include = TRUE}
+GoodmanKruskalGamma(gammadf$alcohol, gammadf$class_rank)
+```
+
+<!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
+
+<!-- ![](docs/gamma_spss.png) -->
+
+<!-- ::: callout-note -->
+<!-- #### Output explanation -->
+
+<!-- In SPSS, the value for Gamma is stated under 'Value'. -->
+<!-- ::: -->
+
+::: callout-warning
+#### Interpretation
+
+The range of gamma is -1.0 to +1.0. A gamma of 0.0 indicates that there is no relationship between the two variables. In other words, the independent variable does not help at all to predict the dependent variable. A gamma of 1.0 indicates that the dependent variable can be predicted by the independent variable without any error and that the relationship between the variables is positive. Likewise, when gamma is -1.0, the independent variable can perfectly predict the dependent variable with no error but the relationship is negative.
+
+For example, if the value for $\gamma$ is 0.30, this means that by knowing about the level of the independent variable we can make a 30% better estimate about the dependent variable. Given that the value is positive, we also know the direction: as the level of the independent variable goes up, the level of the dependent variable goes up, too.
+
+There is no formal way to determine if the value for $\gamma$ is high or low, and the rules of thumb often depend on the field (e.g. biology, medicine, business, etc.). Rea and Parker (1992) suggest the following:
+
+-   ± 0.00 < 0.10 - Negligible
+
+-   ± 0.10 < 0.20 - Weak
+
+-   ± 0.20 < 0.40 - Moderate
+
+-   ± 0.40 < 0.60 - Relatively strong
+
+-   ± 0.60 < 0.80 - Strong
+
+-   ± 0.80 < 1.00 - Very strong
+:::
+
+#### Reporting
+
+::: callout-tip
+#### Report
+
+✓ There is a 'medium' sized (or 'moderate') positive relationship between the class rank of a respondent and the frequency of drinking alcohol, $\gamma$ = 0.318
+:::
+
+

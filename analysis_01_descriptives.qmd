@@ -1,0 +1,214 @@
+# Measures of central tendency and dispersion {#sec-analysis-descriptives}
+
+## Measures of central tendency
+
+The most commonly used measures of central tendency are the mean, median and the mode. To show how we calculate them using R, we will use the three variables:
+
+```{r eval=TRUE, include=TRUE}
+directions <- factor(c("East", "West", "East", "North", "North", "East", "West", "West", "West", "East", "North"))
+temperature <- factor(c("low", "high", "medium", "high", "low", "medium", "high"), levels = c("low", "medium", "high"), ordered = TRUE)
+exam_points <- c(2, 7, 3, 4, 2, 0)
+
+directions #nominal
+temperature #ordinal
+exam_points #interval/ratio
+```
+
+### Mode
+
+The mode is the value that has highest number of occurrences in a set of data. We can first have a look at the distribution of the values with the `table()` function
+
+```{r eval=FALSE, include=TRUE}
+table(directions)
+```
+
+Based on this, we can see that there are two modes (East and West).
+
+```{r eval=FALSE, include=TRUE}
+directions
+ East North  West 
+    4     3     4
+```
+
+If we want to calculate the mode, we can use a package called [DescTools](https://www.rdocumentation.org/packages/DescTools/versions/0.99.19). This is a collection of miscellaneous basic statistic functions for efficiently describing data. The package contains the `Mode()` (notice the upper case M) function.
+
+We load the necessary packages as follows:
+
+```{r eval=FALSE, include=TRUE}
+library(DescTools) # This loads DescTools
+```
+
+```{r echo=FALSE}
+library(DescTools)
+```
+
+To calculate the mode, we write:
+
+```{r eval=TRUE, include=TRUE}
+Mode(directions)
+```
+
+The results show that `[1] East West` are the two modes.
+
+### Median
+
+The median is the value that, assuming the dataset is ordered from smallest to largest, falls in the middle. To calculate it, we use the `Median()` command from the [DescTools](https://www.rdocumentation.org/packages/DescTools/versions/0.99.19) package (again, notice the upper case M). This can deal with factors:
+
+```{r eval=FALSE, include=TRUE}
+Median(temperature)
+```
+
+```{r eval=FALSE, include=TRUE}
+> Median(temperature)
+[1] medium
+Levels: low < medium < high
+```
+
+### Mean
+
+The mean of a set of observations is calculated by adding up all the values and then divide by the total number of values. Let us first calculate the sum of all values via `sum()`.
+
+```{r, include=TRUE}
+sum(exam_points)
+```
+
+Next, we calculate the number of observations via length().
+
+```{r, include=TRUE}
+length(exam_points)
+```
+
+To calculate the mean we can simply combine these two:
+
+```{r, include=TRUE}
+sum(exam_points)/length(exam_points)
+```
+
+or we can simply use the `mean()` function:
+
+```{r, include=TRUE}
+mean(exam_points, na.rm = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add the last part `, na.rm = TRUE` to tell R to omit any possible missing values from the calculation. Here, there were no missing values but in most existing data sets you will find them.
+
+## Measures of dispersion
+
+To find the minimum and maximum value of a vector or column we can use the max and min functions.
+
+```{r eval=FALSE, include=TRUE}
+min()
+max()
+```
+
+Applied to the ordinal and interval/ratio variable that we have created:
+
+```{r, include=TRUE}
+min(temperature, na.rm = TRUE)
+max(exam_points, na.rm = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add the last part `, na.rm = TRUE` to tell R to omit any possible missing values from the calculation. Here, there were no missing values but in most existing data sets you will find them.
+
+### Range and interquartile range
+
+`range()` returns a vector containing the minimum and maximum of all the given arguments.
+
+```{r eval=FALSE, include=TRUE}
+range(x, na.rm = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add the last part `, na.rm = TRUE` in the `range()` function to tell R to omit any possible missing values from the calculation. Here, there were no missing values but in most existing data sets you will find them.
+
+We can calculate the range of the ordinal and interval/ratio variable that we have created:
+
+```{r, include=TRUE}
+range(temperature, na.rm = TRUE)
+range(exam_points, na.rm = TRUE)
+```
+
+#### Interquatile range
+
+To get an overview of the interquartile range, we can use the `summary()` function:
+
+```{r, include=TRUE}
+summary(exam_points)
+```
+
+### Standard deviation and variance
+
+You can calculate standard deviation in R using the `sd()` function. By default, this will generate the sample standard deviation. If you wish to use it to generate the population standard deviation, you can make the appropriate adjustment (multiply by sqrt((n-1)/n)).
+
+```{r, include=TRUE}
+sd(exam_points, na.rm = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add the last part `, na.rm = TRUE` to tell R to omit any possible missing values from the calculation. Here, there were no missing values but in most existing data sets you will find them.
+
+To calculate the variance, we can simply use the `var()` function:
+
+```{r, include=TRUE}
+var(exam_points, na.rm = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add the last part `, na.rm = TRUE` to tell R to omit any possible missing values from the calculation. Here, there were no missing values but in most existing data sets you will find them.
+
+## Doing operations in data frames
+
+As explained in [chapter -@sec-data-week1], you use the "\$" symbol to call variables in data frames. Therefore, if we want to use any of the functions that were covered so far (`mean()`, `table()`, `sd()`, `var()`, etc.) you simply use thus operator to access specific variables in data frames. If we want to calculate the mean and standard deviation of movie scores ('Score') in 'deniro_data' we would write:
+
+```{r}
+#| echo: false
+library(rio)
+deniro_data <- import(file = "data/deniro.csv") 
+```
+
+```{r}
+#| eval: false
+library(rio)
+deniro_data <- import(file = "deniro.csv") 
+```
+
+```{r, include=TRUE}
+mean(deniro_data$Score, na.rm = TRUE)
+sd(deniro_data$Score, na.rm = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add the last part `, na.rm = TRUE` to tell R to omit any possible missing values from the calculation. Here, there were no missing values but in most existing data sets you will find them.
+
+## Descriptive statistics for an entire data frame
+
+There are many summary statistics available in R. An easy way to get a basic overview of a data frame is the `describe()` function from the ['psych' package](https://www.rdocumentation.org/packages/psych/versions/1.0-17/topics/describe). If you need to install the pakcges, you can do so using `install.packages("DescTools")` or `install.packages("psych")` (not necessary on University PCs).
+
+To use the [`describe()`](https://www.rdocumentation.org/packages/psych/versions/1.0-17/topics/describe) function from the 'psych' package, we write:
+
+```{r, include=TRUE}
+library(psych)
+describe(deniro_data, na.rm = TRUE, skew = FALSE, ranges = TRUE)
+```
+
+`, na.rm = TRUE`
+
+:   We add `, na.rm = TRUE` to tell R to omit missing values.
+
+`, skew = FALSE`
+
+:   Via this part of the code, we tell R whether it should calculate the skewness of the variable. I would recommend to leave it out but if you wish to include it, change it to `, skew = TRUE`.
+
+`, ranges = TRUE`
+
+:   We add `, ranges = TRUE` to tell R to calculate the range. If you do not want this, you can set it to `, ranges = FALSE`
+
+As you can see, this produces a relatively straightforward summary table.

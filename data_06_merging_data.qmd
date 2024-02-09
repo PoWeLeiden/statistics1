@@ -1,0 +1,191 @@
+# Combining & joining data sets {#sec-data-merging-data}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+library(tidyverse)
+library(rio)
+
+canada <- import(here::here("data/2019 Canadian Election Study.rds"))
+```
+
+The required packages for this chapter are:
+
+```{r}
+library(tidyverse)
+library(rio)
+```
+
+We use data from the 2019 Canadian Election Study as an example in this overview:
+
+```{r, eval=FALSE}
+canada <- import("2019 Canadian Election Study.rds")
+```
+
+## Adding rows or columns
+
+### Adding rows
+
+If we have two datasets with the same columns (variables), we can add the rows of the two data sets together using `bind_rows` from package `dplyr` (this package is loaded with the tidyverse).
+
+As an example, we have two data sets with the same variables, `names` and `age`:
+
+```{r}
+dta1 <- data.frame(name = c("Billy", "Xin", "Hugo"), age = c(20, 30, 40))
+dta2 <- data.frame(name = c("Theresa", "Elin", "Lena"), age = c(25, 35, 45))
+
+dta1 
+dta2
+```
+
+We can combine these data sets as follows:
+
+```{r}
+dta_combined <- bind_rows(dta1, dta2)
+dta_combined
+```
+
+### Adding columns
+
+If we want to add additional columns to a data frame, we can use `bind_cols` from package `dplyr` (this package is loaded with the tidyverse).
+
+For example, if we have two datasets, one with name and age of people, and another with their self-reported gender:
+
+```{r}
+dta <- data.frame(name = c("Billy", "Xin", "Hugo"), age = c(20, 30, 40))
+gender <- data.frame(gender = c("Non-binary", "Female", "Male"))
+```
+
+```{r}
+dta
+gender
+```
+
+We can combine this, using `bind_cols`:
+
+```{r}
+bind_cols(dta, gender)
+```
+
+***Important*****:** `bind_cols` will match by position, so the order of rows must be exactly the same. For more flexible ways of adding columns to a dataset, see 'joining of data sets' below.
+
+## Joining data sets
+
+If we have two datasets with a common variable (i.e. a variable that has the same name and comparable coding, for example a country name or a unique identifier), we can combine the datasets, using `join` from `dplyr`.
+
+Let's start with some toy data on 4 countries:
+
+```{r}
+country_dta1 <- data.frame(country = c("USA", "Germany", "Netherlands", "Kenya"),
+                           population = c(332, 84, 18, 56))
+
+country_dta2 <- data.frame(country = c("Netherlands", "Germany", "Kenya", "Argentina"),
+                          official_name = c("Nederland", "Bundesrepublik Deutschland", "Republic of Kenya", "República Argentina"))
+
+country_dta1
+country_dta2
+```
+
+Note that only three countries feature in both datasets, but the variable `country` is present in both data frames and the values are the same for the three countries that are in both datasets.
+
+We can merge the data in these datasets as follows, using so called 'joins' from pacakge `dplyr`. The function `full_join` returns all rows in both datasets:
+
+```{r}
+joined_data <- full_join(x = country_dta1, 
+                         y = country_dta2, 
+                         by = c("country"))
+```
+
+`x = country_dta1`
+
+:   This specifies the first of the two datasets. Replace with your own dataset when working with your own data.
+
+`y = country_dta2`
+
+:   This specifies the second of the two datasets.
+
+`by = c("country")`
+
+:   This specifies the column on which we would like to match values of the two data frames (specified as a vector, i.e. between double parentheses). In our example, we use the variable country, as this variable is comparable between our two data sets.
+
+```{r}
+joined_data
+```
+
+We can see that all five countries are present in the joined data set. The USA is missing from `country_dta2`, so has a missing value (`NA`) on `official_name` in the joined data set. Argentina is missing from `country_dta1`, so has a missing value on `population` in the joined data set.
+
+There are four types of joins:
+
+| Function       | Includes                   |
+|----------------|----------------------------|
+| `inner_join()` | All rows in `x` *and* `y`. |
+| `left_join()`  | All rows in `x`.           |
+| `right_join()` | All rows in `y`.           |
+| `full_join()`  | All rows in `x` *or* `y`.  |
+
+We can see the result if we run and print the four types of joins:
+
+```{r}
+# Inner join: only the three countries that are in both data sets
+inner_join(x = country_dta1, y = country_dta2, by = c("country"))
+
+# Left join: only the four countries in the first data set
+left_join(x = country_dta1, y = country_dta2, by = c("country"))
+
+# Right join: only the four countries in the second data set
+right_join(x = country_dta1, y = country_dta2, by = c("country"))
+
+# Full join: all five countries
+full_join(x = country_dta1, y = country_dta2, by = c("country"))
+```
+
+### Joining with different variables
+
+If we have two data frames with different names, we need to instruct R which variables are to be compared.
+
+For example, suppose we have a third data frame with country information:
+
+```{r}
+country_dta3 <- data.frame(country_name = c("USA", "Netherlands", "Germany"),
+                           capital_city = c("Washington DC", "Amsterdam", "Berlin"))
+country_dta3
+```
+
+We note that the variable containing the country name is called `country_name` in this data frame. In order to join it with `country_dta1`, we need to specify `by` as follows:
+
+```{r}
+full_join(x = country_dta1, y = country_dta3, 
+          by = c("country" = "country_name"))
+```
+
+`by = c("country" = "country_name")`
+
+:   The syntax `"country" = "country_name"` means that we are comparing variable `country` from the first data set to variable `country_name` from the second data set.
+
+Note that this solution only works when the country names are spelled identically (and only the variable name is different). The below will not work properly, because the country names are not comparable between the two datasets:
+
+```{r}
+country_dta4 <- data.frame(country = c("United States of America", "Deutschland", "Nederland"),
+                           capital_city = c("Washington DC", "Berlin", "Amsterdam"))
+
+country_dta4
+
+full_join(country_dta1, country_dta4)
+
+```
+
+In such cases, the solution would be to first recode the variable that is used for joining, for example:
+
+```{r}
+country_dta4_recoded <- country_dta4 |>
+  mutate(country = recode(country, 
+                          "United States of America" = "USA",
+                          "Deutschland" = "Germany",
+                          "Nederland" = "Netherlands"))
+
+full_join(country_dta1, country_dta4_recoded)
+```

@@ -1,0 +1,424 @@
+# Creating, summarising & recoding variables {#sec-data-variables}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+library(tidyverse)
+library(rio)
+library(DescTools)
+library(infer)
+
+dta <- import(here::here("data/Democracy Cross-National Data V4.1 09092015.sav")) |>
+  mutate(religion = factorize(Fox_emajrel)) |>
+  mutate(TypeEcon2006 = factorize(TypeEcon2006))
+
+canada <- import(here::here("data/2019 Canadian Election Study.rds"))
+```
+
+In this chapter we will use the packages listed and the datasets loaded in the following code chunk. We will use Pippa Noriss' [Democracy Cross-national Data](https://sites.google.com/site/pippanorris3/research/data#TOC-Democracy-Cross-national-Data-Release-4.0-Fall-2015-New-) and the 2019 Canadian Election Study. Make sure you load these packages and datasets before you start working with the examples in this overview:
+
+```{r, eval=FALSE}
+# Loading packages
+library(tidyverse)  # For working with data
+library(rio)        # For importing datasets
+library(DescTools)  # Used here for calculating the Median
+
+# Loading the datasets
+dta <- import("Democracy Cross-National Data V4.1 09092015.sav") 
+canada <- import("2019 Canadian Election Study.rds")
+```
+
+## Creating or changing variables
+
+We can use the function `mutate` from package `dplyr` to create new variables or change existing variables in a data frame. Package `dplyr` is loaded as part of the `tidyverse`.
+
+We'll use the variable Pop2006 as an example, which registers the population of countries in 2006:
+
+```{r}
+head(dta$Pop2006)
+```
+
+If we would like to create a variable that registers the population *in millions*, we can create the new variable as follows:
+
+```{r}
+dta <- dta |>
+  mutate(Pop2006_million = Pop2006 / 1000000)
+```
+
+`dta <- dta |>`
+
+:   This part of the code says that we are going to start of with the data frame `dta` and assign the result to a data frame with the same name. Basically it means: we're going to change the data frame `dta` . If you are working with your own data, you would replace this by the name of your own data frame.
+
+    Note that we are using the pipe operator `|>` here, which means that we are taking the original data frame, and using this in the mutate function (see below).
+
+`mutate(...)`
+
+:   The mutate function creates a new variable or changes an existing one. Within the brackets we specify what kind of mutation we want.
+
+`Pop2006_million`
+
+:   This is the name of the variable we're creating. If you do not write the name of a new variable but instead use the name of an existing variable, this would change the values of that variable. In your own data, replace `Pop2006_million` by the name of the variable you would like to create.
+
+`Pop2006 / 1000000`
+
+:   This is how we would like to create this new variable, in this case by dividing the existing variable `Pop2006` by one million. You can apply any kind of function or operator, as long as it works on a vector (in this case: an entire column of a dataset).
+
+We can compare the first five cases to check if the transformation worked as intended:
+
+```{r}
+dta |>
+  select(Pop2006, Pop2006_million) |>   # Select the original and transformed variable
+  head()                                # Display the first few rows
+```
+
+Other examples of mutations are:
+
+```{r}
+
+# Calculate the difference between the population in 2006 and 2000
+dta <- dta |>
+  mutate(Pop2006_difference = Pop2006 - Pop2000)
+
+# Take the square root of the population
+dta <- dta |>
+  mutate(Pop2006_squared = sqrt(Pop2006))
+
+# Take the natural logarithm of the population
+dta <- dta |>
+  mutate(Pop2006_log = log(Pop2006))  
+
+# Create a new variable with the same value (1) for all cases
+dta <- dta |>
+  mutate(Country = 1)
+```
+
+Important things about mutate:
+
+-   Do not use the `$` operator to select variables from a data frame. You must simply use the name of the variabe.
+
+-   Do not forget to *assign* the result, i.e. start the code with `dta <- dta |>` (replacing `dta` by the name of your dataset). If you do not assign the result, R will simply print out the mutated data frame but not save it.
+
+-   If you apply a mutation to a data frame and assign the result, this will not generate any output. When it works succesfully, it will simply change your data frame or create a new one. You can subsequently inspect the data to see if the transformation worked.
+
+## Summarising data
+
+We can summarise data using the function `summarise` from pacakge `dplyr`. Package `dplyr` is loaded as part of the `tidyverse`.
+
+```{r}
+dta |>
+  summarise(mean_population = mean(Pop2006, na.rm=TRUE))
+```
+
+This will simply give us the mean value of Pop2006 for all countries in the world. The most powerful use of `summarise` is in combination with `group_by`. For example, the below code groups countries by continent (`DD_un_continent_name`) and then calculates the mean population size for each continent:
+
+```{r}
+dta |>
+  group_by(DD_un_continent_name) |>
+  summarise(mean_population = mean(Pop2006, na.rm=TRUE))
+
+```
+
+We can also group by more than one grouping variable. For example, here we calculate the mean population for democracies (Cheibub2Type = 0) and dictatorships (Cheibub2Type = 1) in each continent:
+
+```{r}
+dta |>
+  group_by(DD_un_continent_name, Cheibub2Type) |>
+  summarise(mean_population = mean(Pop2006, na.rm=TRUE))
+```
+
+You can also calculate multiple summary functions:
+
+```{r}
+dta |>
+  group_by(DD_un_continent_name) |>
+  summarise(mean_population = mean(Pop2006, na.rm=TRUE),
+            median_poplation = Median(Pop2006, na.rm=TRUE),  # Median from pacakge DescTools
+            sd_population = sd(Pop2006, na.rm=TRUE))
+```
+
+If you want to save the result to a new data frame instead of printing it out, you can simply assign the result. Note that there is no output from the below code chunk because the result is saved in the data frame `summary_data`:
+
+```{r}
+summary_data <- dta |>
+  group_by(DD_un_continent_name) |>
+  summarise(mean_population = mean(Pop2006, na.rm=TRUE),
+            median_poplation = Median(Pop2006, na.rm=TRUE), # Median from pacakge DescTools
+            sd_population = sd(Pop2006, na.rm=TRUE))
+```
+
+> The difference between mutate and summarise is that mutate creates a new value for each case in the dataset, while summarise will summarise the data by the grouping variable.
+
+## Recoding variables
+
+Recoding variables means that we change the coding of values. This often applies to nominal or ordinal variables (factors), for example when we would like to group some categories together.
+
+### Recoding nominal variables
+
+We illustrate this using the variable `religion` 'Majority religion' that we create from Pippa Noris' [Democracy Cross-national Data](https://sites.google.com/site/pippanorris3/research/data#TOC-Democracy-Cross-national-Data-Release-4.0-Fall-2015-New-). We already imported the dataset (`dta`) and loaded the relevant packages (`tidyverse`, `rio`) at the start of this overview.
+
+First, we create variable `religion` using the function `factorize` from `rio`. This creates a factor version of the original (labelled numeric) variable `Fox_emajrel`.
+
+```{r, eval=FALSE}
+dta <- dta |>
+  mutate(religion = factorize(Fox_emajrel))
+```
+
+The variable `religion` can take the following values:
+
+```{r}
+table(dta$religion)
+```
+
+We see that we have various large religions and various smaller categories. We can also see that various Islamic denominations and Christian denominations have been split up. Suppose we want, for the purpose of further analysis, simplify the categorisation to five categories: Christian, Islamic, Hindu, Buddhist and Other.
+
+We can use the `recode` function from `dplyr` to recode the categories. Package `dplyr` is loaded as part of the `tidyverse`.
+
+```{r}
+dta <- dta |>
+  mutate(religion_recoded = recode(religion, 
+                                   "Animist" = "Other",
+                                   "Catholic" = "Christian",
+                                   "Islam (general)" = "Islam",
+                                   "Islam, Other" = "Islam",
+                                   "Islam, Shi'i" = "Islam",
+                                   "Islam, Sunni" = "Islam",
+                                   "Jewish" = "Other",
+                                   "Mixed" = "Other",
+                                   "Orthodox Christian" = "Christian",
+                                   "Protestant Christian" = "Christian",
+                                   "Other Christian" = "Christian",
+                                   "Christian (general)" = "Christian"
+                                   )
+         )
+```
+
+`mutate(religion_recoded =`
+
+:   This part of the code indicates that we want to create a new variable `religion_recoded`. If you work with your own data you would of course choose an appropriate name.
+
+`recode(religion,`
+
+:   This part of the code indicates that we would like to recode the existing variable `religion`. If you work with your own data, specify the name of the existing variable that you want to recode.
+
+`"Animist" = "Other"`
+
+:   These are the recoding statements, where we writing the old name on the left and the new name on the right between double quotation marks (").
+
+    We can include as many of these statements as we like. If we do not include a value, it will remain unchanged (by default). For example, we do not include a statement for `Other`, so this value will be the same in the recoded variable.
+
+We can see that the recoding has resulted in the five categories that we would like:
+
+```{r}
+table(dta$religion_recoded)
+```
+
+We can also check whether the old values have been correctly recoded in the new values:
+
+```{r}
+table(dta$religion, dta$religion_recoded)
+```
+
+(For example, all four majority Animist countries have correctly been recoded to 'Other').
+
+### Recoding ordinal variables
+
+If you have an ordinal variable you want to recode, you would probably like the order of the variable to be kept.
+
+For example, we have variable `economy` which we create from the Norris dataset. It is a classification of of countries based on their GDP per capita. We already imported the dataset (`dta`) and loaded the relevant packages (`tidyverse`, `rio`) at the start of this overview.
+
+First, we create variable `economy` using the function `factorize` from `rio`. This creates a factor version of the original (labelled numeric) variable `TypeEcon2006`.
+
+```{r}
+dta <- dta |>
+  mutate(economy = factorize(TypeEcon2006))
+```
+
+The variable `economy` can take the following values:
+
+```{r}
+table(dta$economy)
+```
+
+Sometimes one wants to merge certain categories, for example, to take together the High and Medium level countries, but preserve the order from low to high. We can achieve this using `recode_factor`:
+
+```{r}
+dta <- dta |>
+  mutate(economy_recoded = recode_factor(economy,
+                                         "Low ($2000 or less)" = "Lower",
+                                         "High ($15,000+)" = "Higher",
+                                         "Medium ($2,000-14,999)" = "Higher",
+                                         .ordered = TRUE)
+         )
+```
+
+`mutate(economy_recoded`
+
+:   This part of the code indicates that we want to create a new variable `economy_recoded`. If you work with your own data you would choose an appropriate name for the recoded variable.
+
+`recode_factor(economy,`
+
+:   This part of the code indicates that we would like to recode the existing variable `economy`. If you work with your own data, specify the name of the existing variable that you want to recode.
+
+`"Low ($2000 or less)"="Lower"`
+
+:   These are the recoding statements, where we writing the old name on the left and the new name on the right between double quotation marks (").
+
+    We can include as many of these statements as we like. Note that the spelling of the original category needs to be exact.
+
+`.ordered = TRUE`
+
+:   This indicates that we would like to create an ordered factor. Please note the dot before ordered.
+
+If we inspect the first few values, we see that the factor is ordered. The order of the factor is determined by the order in which you have specified the recoding statements (i.e. Lower, then Higher):
+
+```{r}
+head(dta$economy_recoded)
+```
+
+### Recoding numeric variables
+
+Recoding numeric variables works similarly to recoding norminal or ordinal variables.
+
+As an example take the Freedom House Democracy Ratings for 2014 (`fhrate14`), which are epxressed on a scale from 1 to 7. Freedom House also uses a three-point rating: Free (1.0 to 2.5), Partly Free (3.0 to 5.0) and Not Free (5.5 to 7). We already imported the dataset (`dta`) and loaded the relevant packages (`tidyverse`, `rio`) at the start of this overview.
+
+We can recode the variable `fhrate14` as follows:
+
+```{r}
+dta <- dta |>
+  mutate(fhrate14_recoded = recode(fhrate14,
+                                   "1" = 1,
+                                   "1.5" = 1,
+                                   "2.0" = 1,
+                                   "2.5" = 1,
+                                   "3" = 2,
+                                   "3.5" = 2,
+                                   "4" = 2,
+                                   "4.5" = 2,
+                                   "5" = 2,
+                                   "5.5" = 3,
+                                   "6" = 3,
+                                   "6.5" = 3,
+                                   "7" = 3)
+         )
+
+```
+
+```{r}
+table(dta$fhrate14_recoded)
+```
+
+**Note:** if you have many unique values, this may not be the most efficient way to recode a numeric variable. In such cases using `ifelse` or `case_when` will work more efficiently; these functions will be discussed in one of the upcoming weeks.[^data_week4-1] There are also other packages that offer recoding functions (such as [`recode`](https://rdrr.io/cran/car/man/recode.html) from package `car` or [`rec`](https://strengejacke.github.io/sjmisc/reference/rec.html) from pacakge `sjmisc`), but we will not discuss these here.
+
+[^data_week4-1]: In our example, we could use:
+
+    ```{r}
+    dta <- dta |>
+           mutate(fhrate14_recoded2 = case_when(fhrate14 <= 2.5 ~ 1,
+                                                fhrate14 <= 5 ~ 2,
+                                                fhrate14 <= 7 ~ 3,
+                                                TRUE ~ NA_real_))
+    table(dta$fhrate14_recoded2)
+    ```
+
+## Missing data
+
+Many real world datasets are incomplete: they have missing data. For example, in Pippa Norris' dataset on countries many variables are not observed for each country. We already imported this dataset (`dta`) and loaded the relevant packages (`tidyverse`, `rio`) at the start of this overview.
+
+For some countries the dataset contains missing values on the variable `Pop2006` (population size in 2006):
+
+```{r}
+dta |>
+  filter(is.na(Pop2006)) |>
+  select(Nation, Pop2006)
+```
+
+The term `NA` means `Not Available`. In this case there may not have been reliable data for these countries' population sizes in 2006 (Afghanistan, Iraq) or the country simply did not exist in 2006 (South Sudan). There can be various reasons for missing data in a dataset.
+
+### Types of missing data
+
+In R, `NA` is commonly used to signal missing data, but if we load datasets in an SPSS, Stata or other file format, missing data may have different codes. Often, this type of information can be found in the codebook, a separate file (often a PDF) that describes the dataset and its variables.
+
+One example is the variable `cps19_pidtrad` (Traditional party identification) from the 2019 Canadian Election Study (we loaded this data at the start of this overview):
+
+```{r}
+levels(canada$pes19_pidtrad)
+```
+
+This variable has a category 'None of these' and 'Don't know/Prefer not to answer' which for most analysis should be treated as missing data. However, there are currently treated as regular answer categories.
+
+> We recommend to always check the levels or values of a variable to check for missing data issues.
+
+This type of problem can also be encountered in interval-ratio variables (numeric variables), where in some cases numbers like `999` are used to indicate missing values. **Note:** this is something we do not recommend, but you may encounter it in real-world data you are working with.
+
+One example in which the value `999` has been used to indicate missing data. If we calculate the mean for this variable without telling R that `999` is actually missing data, we will overestimate the mean age:
+
+```{r}
+data_age <- data.frame(age = c(55, 64, 37, 56, 999, 42, 47, 22, 49, 68, 59, 999))
+mean(data_age$age)  # The result is incorrect, because of the incorrect treatment of the missing values
+```
+
+### Recoding missing data
+
+If there are values in the data that you would like to treat as missing data, you can use `na_if` from package `dplyr`. Package `dplyr` is loaded as part of the `tidyverse`.
+
+```{r}
+canada <- canada |>
+  mutate(pes19_pidtrad = na_if(pes19_pidtrad, 
+                               "Don't know/ Prefer not to answer")) |>
+  mutate(pes19_pidtrad = na_if(pes19_pidtrad, 
+                               "None of these")) |>
+  mutate(pes19_pidtrad = droplevels(pes19_pidtrad))
+
+table(canada$pes19_pidtrad, useNA = "ifany") # Display a table including NAs
+```
+
+`mutate(pes19_pidtrad = ...`
+
+:   We are going to change the existing variable `pes19_pidtrad`.
+
+`na_if(pes19_pidtrad, "Don't know/ Prefer not to answer")`
+
+:   This function changes particular values in a variable to `NA` . In this example we would like to change values of `"Don't know/ Prefer not to answer"` of `pes19_pidtrad` into missing values (`NA`). For your own data you will need to insert the appropriate variable name and the value you would like to have changed to `NA`.
+
+`mutate(pes19_pidtrad = droplevels(pes19_pidtrad))`
+
+:   Finally, we use `droplevels` to ensure that the levels that we recoded as `NA` are completely removed as levels from factor `pes19_pidtrad`, so that in any subsequent analyses these are completely ignored. This is not necessary for other types of variables (`numeric` or `character`).
+
+We see that there are no more respondents who answer 'None of these' or 'Don't know/Prefer not to answer'. **Note:** Because we have two values that we would like to be transformed into `NA`, we have two `mutate` statements.
+
+This also works for replacing numeric values, like in our `data_age` example. Here we want to change the value of `999` to `NA`:
+
+```{r}
+data_age <- data_age |>
+  mutate(age = na_if(age, 999))
+data_age$age
+```
+
+And the mean will be correctly calculated after recoding the missing values:
+
+```{r}
+mean(data_age$age, na.rm=TRUE)
+```
+
+Note: it is better to use `na_if` than `recode` to recode missing values.[^data_week4-2]
+
+[^data_week4-2]: The reason is that if you use recode to recode to missing values, you need to tell R exactly what type of missing data you have, for example `NA_character_` instead of just `NA` for a character variable. Otherwise you will run into incompatible vector problems that are better avoided.
+
+### Filtering out missing data
+
+You can *filter* out missing data, using the `is.na` function:
+
+```{r}
+dta |>
+  filter(!is.na(Pop2006)) |>
+  select(Nation, Pop2006) |>
+  head()
+```
+
+`filter(!is.na(Pop2006))`
+
+:   We filter out cases which have a non-missing value on variable Pop2006. Note the `!` which means **not**, so we want only cases that do not have a missing value on Pop2006.

@@ -1,0 +1,178 @@
+# Advanced recoding of variables {#sec-data-advanced-recoding}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+# recoding variables using case_when 
+# Comparing two proportions, cross tables, chi-squared + effect sizes, 
+# Inference for categorical data (proportions + cross tables)
+# Effect sizes (phi/Cramer's V/Lambda/Gamma)
+library(rio)
+canada <- import(here::here("data/2019 Canadian Election Study.rds"))
+
+data <- data.frame(oecd = c(rep("no", 9), rep("no", 1), rep("yes", 2), rep("yes", 8)), 
+                   econ = c(rep("low", 9), rep("high", 1), rep("low", 2), rep("high", 8)))
+data   
+
+```
+
+## Recoding variables using case_when
+
+Frequently, we need to modify or transform data based on various possible conditions. We can do this using the `case_when()` function from the `dplyr` package.
+
+We will illustrate the usage of this function on a data set with GPA grades (available from the `openintro` package).
+
+The data frame contains the variables 'gpa' and 'study_hours' for a sample of 193 undergraduate students who took an introductory statistics course in 2012 at a private US university. The data is shown as tibble below:
+
+```{r, include=TRUE}
+library(openintro) 
+library(tidyverse) #needed for displaying the data set as tibble
+as_tibble(gpa_study_hours)
+```
+
+Assume that we want to recode the numeric 'gpa' scores into a character variable called 'grades' which uses the letter "A" as the highest grade. For simplicity reasons, we do not make a distinction into A+, A, A-, etc. but only focus on 'whole grades' (A, B, C, etc.).
+
+Following a common grade conversion we want the outcome to be: A (GPA between 3.7 - 4.0), B (2.7 - 3.3), C (1.7 -- 2.3), D (1.0 -- 1.3). The letter F as a grade is equivalent to a 0.0 GPA. Hence, our recoding rules are:
+
+-   If the score is greater than or equal to 3.7, assign an "A"
+-   Else if the score is greater than or equal to (\>=) 2.7, assign a "B"
+-   Else if the score is greater than or equal to (\>=) 1.7, assign a "C"
+-   Else if the score is greater than or equal to (\>=) 1.3, assign a "D"
+-   Else, assign an "F"
+
+`case_when()` works by providing information on two 'sides': on the "left hand side", there is a condition and on the "right hand side" we have the output value if this condition is true. Both are separated by a tilde (\~).
+
+```{r, include=TRUE, eval = F}
+case_when(condition ~ value)
+```
+
+There are a number of important functions and operators that are useful when constructing the expressions used to recode the data:
+
+-   `==` means 'equal to'
+
+-   `!=` means 'not equal to'
+
+-   `<` means 'smaller than'
+
+-   `>` means 'larger than'
+
+-   `<=` means 'equal to or smaller than'
+
+-   `>=` means 'equal to or larger than'
+
+-   `&` means 'AND'
+
+-   `|` means 'OR'
+
+-   `!` means 'NOT'
+
+> To use `case_when()`, we must tell R where to save the result: either by assigning the result to the current variable, or by assigning it to a new variable in our recoding procedure. For this, we use `mutate()`. It is very important that you specify a new variable with `mutate()` while recoding (or an existing variable that will be overwritten). Otherwise R will not know where to put the new, recoded data.
+
+```{r, include=TRUE}
+gpa_study_hours <- gpa_study_hours |>
+  mutate(gpa_grade = case_when(
+    gpa >= 3.7 ~ "A",
+    gpa >= 2.7 ~ "B",
+    gpa >= 1.7 ~ "C",
+    gpa >= 1.3 ~ "D",
+    gpa < 1.3 ~ "F"))  # Note the two brackets at the end (!)
+gpa_study_hours
+```
+
+`gpa_study_hours <-`
+
+:   This first part of the code specifies that we overwrite the existing dataframe 'gpa_study_hours'.
+
+`gpa_study_hours |>`
+
+:   This part of the code specifies that we are working with the `gpa_study_hours` data. Note that we use the native pipe operator (`|>`), see week 2.
+
+`mutate(gpa_grade = case_when(`
+
+:   Here we create a new variable called `gpa_grade` using `mutate()`. The content will depend on what we specify starting with `case_when(`. For your own data, you need to change the name of the new variable.
+
+`gpa >= 3.7 ~ "A",`
+
+:   Here we start specifying our conditions and the output. GPA scores (variable `gpa`) equal to or greater than 3.7 should become the character A (see the quotation marks around the letter).
+
+    **Note:** the general form is thus `condition ~ value` . Multiple statements are separated by a comma.
+
+`gpa >= 2.7 ~ "B", gpa >= 1.7 ~ "C", gpa >= 1.3 ~ "D",`
+
+:   Here we continue specifying our conditions and the output. The lines essentially mean 'else if', i.e. else if gpa is equal to or larger than 2.7 assign a B, else if gpa is equal to or larger than 1.7 assign a C, etc.
+
+`gpa < 1.3 ~ "F"))`
+
+:   Lastly, we specify that the letter F should be assigned to all gpa values smaller than 1.3.
+
+**Note:** if none of the above conditions is true (for example if `gpa` is `NA`), then `case_when` will return a missing value for that case.
+
+> The `case_when()` function is very versatile and can be used to deal with different situations. It is, for example, possible to 'chain' various commands and use 'AND' or 'OR' statements within your code. For those who are interested in learning more, you can have a look at the RDocumentation of the package [here](https://www.rdocumentation.org/packages/dplyr/versions/1.0.10/topics/case_when).
+
+However, we will most likely deal with recoding numeric variables or character variables. Make sure that you use quotation marks around character variables. So, for example, if want to recode the character variable 'gpa_grade' into a numeric grade 'gpa_num' (that has the values 1, 2, 3, 4, 6), we would write:
+
+```{r, include=TRUE, evaluate = F}
+gpa_study_hours <- gpa_study_hours |>
+  mutate(gpa_num = case_when(
+    gpa_grade == "A" ~ 1,
+    gpa_grade == "B" ~ 2,
+    gpa_grade == "C" ~ 3,
+    gpa_grade == "D" ~ 4,
+    gpa_grade == "F" ~ 6))
+```
+
+`gpa_study_hours <-`
+
+:   This first part of the code specifies that we overwrite the existing dataframe 'gpa_study_hours'.
+
+`gpa_study_hours |>`
+
+:   This part of the code specifies that we are working with the `gpa_study_hours` data. Note that we use the native pipe operator (`|>`), see week 2.
+
+`mutate(gpa_num = case_when(`
+
+:   Here we create a new variable called `gpa_num` using `mutate()`. The content will depend on what we specify starting with `case_when(`. For your own data, you need to change the names of the new variable as well as the existing variable
+
+`gpa_grade == "A" ~ 1,`
+
+:   Here we start specifying our conditions and the output. Because `gpa_grade` is a character vector, we use double quotation marks. The GPA grade "A" should be recoded into the number 1 (without quotation marks).
+
+`gpa_grade == "B" ~ 2,` `gpa_grade == "C" ~ 3,` `gpa_grade == "D" ~ 4,`
+
+:   Here we continue specifying our conditions and the output.
+
+`gpa_grade == "F" ~ 6))`
+
+:   Lastly, we specify that the number 6 should be assigned to all values with an "F" in `gpa_grade`.
+
+Of course, if you want to recode a numberic variable into a numeric variable you do **not** use quotation marks. These are only used if one of the variables is a character variable.
+
+### Multiple comparisons
+
+The conditions used by `case_when` can refer to multiple variables. In the below example we would like to calculate a variable `cum laude`, which is equal to 1 when the 'gpa' is 3.3 or over ***and*** the number of study hours is more than 30, and equal to 0 otherwise:
+
+```{r}
+gpa_study_hours <- gpa_study_hours |>
+  mutate(cum_laude = case_when(
+    gpa >= 3.3 & study_hours > 30 ~ 1, 
+    gpa >= 3.3 ~ 0,
+    gpa < 3.3 ~ 0))
+```
+
+`mutate(cum_laude = case_when(`
+
+:   Here we create a new variable called `cum_laude` using `mutate()`.
+
+`gpa >= 3.3 & study_hours > 30 ~ 1,`
+
+:   Our first condition is that `gpa` needs to be 3.3 or higher ***and*** that `study_hours` needs to be larger than 30. If this condition is met, `cum_laude` will be equal to 1.
+
+`gpa >= 3.3 ~ 0,` `gpa < 3.3 ~ 0))`
+
+:   We also need to specify the alternatives. First, if the previous condition is not met, but `gpa` is over 3.3, assign a 0. Additionally, if the previous conditions are not met, but `gpa` is under 3.3, assign a 0 to the new variable 'cum_laude'.
+
+> When working with your own (existing) data sets, have a close look at the 'existing' variables, i.e. the one you wish to recode. Make sure that you correctly specify all alternatives, in particular if your data has missing values on one (or multiple) variables. After recoding, we generally advise you to inspect the outcome variable carefully to see whether the outcome is exactly how you intended it to be.
