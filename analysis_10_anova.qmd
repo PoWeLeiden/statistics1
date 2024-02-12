@@ -1,5 +1,7 @@
 # ANOVA {#sec-analysis-anova}
 
+## ANOVA in R
+
 To illustrate the use of ANOVA we compare mean left-right self placement (`pes19_lr_self_1`) in Canadian provinces (`pes19_province`). This uses data from the 2019 Canadian Election Study:
 
 ```{r, eval=FALSE}
@@ -78,45 +80,7 @@ summary(anova_out)
 
 The summary will print out the degrees of freedom (`Df`), sum of squares (`Sum Sq`), mean squares (`Mean Sq`), F value (`F value`) and p-value (`Pr(>F)`). In this example we observe a significant difference in the mean left-right scores of inhabitants of Canadian provinces, *F*(12, 4356) = 4.261, *p* \< .001.
 
-## Pairwise t-test for comparing multiple group means
-
-We can use a pairwise t-test for comparing the means of all possible pairs of groups. We use a multiple testing adjustment (bonferroni correction) to account for the fact that we are conducting many t-tests:
-
-```{r, eval=FALSE}
-pairwise.t.test(x = canada$pes19_lr_self_1,
-                g = canada$pes19_province,
-                p.adjust.method = "bonferroni",
-                alternative = "two.sided")
-```
-
-`pairwise.t.test(…)`
-
-:   This calls the function `pairwise.t.test` to conduct this test. It is included in the `stats` packages, which is loaded automatically.
-
-`x = canada$pes19_lr_self_1`
-
-:   We specify the interval ratio variable here (in our case variable `pes19_lr_self_1` from the dataset `canada`). We need to use the dollar sign notation, i.e. `<dataset>$<variable name>`
-
-`g = canada$pes19_province`
-
-:   We specify the grouping variable here, again using the dollar sign notation (see above).
-
-`p.adjust.method = "bonferroni"`
-
-:   This specifies that we want to use the Bonferroni correction.
-
-`alternative = "two.sided"`
-
-:   This conducts two-sided significance tests (the default). Other options include `"greater"` and `"less"`.
-
-```{r, echo=FALSE}
-pairwise.t.test(x = canada$pes19_lr_self_1,
-                g = canada$pes19_province,
-                p.adjust.method = "bonferroni",
-                alternative = "two.sided")
-```
-
-## Reporting ANOVA
+### Reporting ANOVA
 
 ANOVA compares variances in order to establish whether there is a difference in means between more than two groups. We use example data on the rating of 4 seasons of game of thrones.
 
@@ -194,8 +158,46 @@ The correct report includes:
 ✓ There was a statistically significant difference between the mean rating of game of thrones seasons across different groups, F(3, 175) = 7.306, p < 0.001.
 :::
 
+## Pairwise t-test for comparing multiple group means
 
-## Bonferroni correction
+We can use a pairwise t-test for comparing the means of all possible pairs of groups. We use a multiple testing adjustment (bonferroni correction) to account for the fact that we are conducting many t-tests:
+
+```{r, eval=FALSE}
+pairwise.t.test(x = canada$pes19_lr_self_1,
+                g = canada$pes19_province,
+                p.adjust.method = "bonferroni",
+                alternative = "two.sided")
+```
+
+`pairwise.t.test(…)`
+
+:   This calls the function `pairwise.t.test` to conduct this test. It is included in the `stats` packages, which is loaded automatically.
+
+`x = canada$pes19_lr_self_1`
+
+:   We specify the interval ratio variable here (in our case variable `pes19_lr_self_1` from the dataset `canada`). We need to use the dollar sign notation, i.e. `<dataset>$<variable name>`
+
+`g = canada$pes19_province`
+
+:   We specify the grouping variable here, again using the dollar sign notation (see above).
+
+`p.adjust.method = "bonferroni"`
+
+:   This specifies that we want to use the Bonferroni correction.
+
+`alternative = "two.sided"`
+
+:   This conducts two-sided significance tests (the default). Other options include `"greater"` and `"less"`.
+
+```{r, echo=FALSE}
+pairwise.t.test(x = canada$pes19_lr_self_1,
+                g = canada$pes19_province,
+                p.adjust.method = "bonferroni",
+                alternative = "two.sided")
+```
+
+
+### Reporting Bonferroni correction
 
 ```{r, echo=TRUE, include = TRUE}
 library(stats)
