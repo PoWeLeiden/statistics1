@@ -78,9 +78,9 @@ The column `se` displays the standard error of the mean (by default rounded to t
 
 To calculate a one sample t-test we use the function `t.test`:
 
-In the below example we measure whether the age of respondents is different from a hypothesized mean of 48.5:[^1]
+In the below example we measure whether the age of respondents is different from a hypothesized mean of 48.5:[^analysis_08_t-test-1]
 
-[^1]: In this overview we use the co-called 'formula interface' to t.test. You can also use the so-called traditional interface. For the one-sample t-test example, the equivalent code is:
+[^analysis_08_t-test-1]: In this overview we use the co-called 'formula interface' to t.test. You can also use the so-called traditional interface. For the one-sample t-test example, the equivalent code is:
 
     ```{r}
     t.test(x = canada$cps19_age,
@@ -127,7 +127,6 @@ We illustrate the one-sample t-test using data on the fruit consumption of stude
 fruit <- import("docs/s1_hhoorcollege_3 fruitconsumption.csv")
 ```
 
-
 ```{r, echo = TRUE, include = TRUE}
 MeanSE(fruit$fruitconsumption)
 
@@ -144,45 +143,48 @@ t.test(x = fruit$fruitconsumption,
 ::: callout-note
 #### Output explanation
 
-* In R, the output shows:
-  + the mean of the observations in the sample (see 'mean of x').
-  + the calculated t-value (see 't = ').
-  +  the degrees of freedom (see 'df = ').
-  + the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis).
-  + the expected value under the null hypothesis (here 100, see "true mean is not equal to 100").
-  + the standard error of the observations in the sample is obtained separately via `MeanSE()`.
-
+-   In R, the output shows:
+    -   the mean of the observations in the sample (see 'mean of x').
+    -   the calculated t-value (see 't = ').
+    -   the degrees of freedom (see 'df = ').
+    -   the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis).
+    -   the expected value under the null hypothesis (here 100, see "true mean is not equal to 100").
+    -   the standard error of the observations in the sample is obtained separately via `MeanSE()`.
 
 <!-- In SPSS, the information is presented in two tables.  -->
 
 <!-- * In the table 'One-Sample Statistics', we find -->
-<!--   +the mean of the observations in the sample (see cell 'Mean'). -->
-<!--   +the standard error (see cell 'Std. Error Mean'). -->
-<!-- * In the SPSS table 'One-Sample Test', we find -->
-<!--   +the calculated t-value (see cell 't'). -->
-<!--   +the degrees of freedom (see cell 'df'). -->
-<!--   +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis. -->
-<!--   +the expected value under the null hypothesis (here 100, see "Test Value = 100"). -->
 
+<!--   +the mean of the observations in the sample (see cell 'Mean'). -->
+
+<!--   +the standard error (see cell 'Std. Error Mean'). -->
+
+<!-- * In the SPSS table 'One-Sample Test', we find -->
+
+<!--   +the calculated t-value (see cell 't'). -->
+
+<!--   +the degrees of freedom (see cell 'df'). -->
+
+<!--   +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis. -->
+
+<!--   +the expected value under the null hypothesis (here 100, see "Test Value = 100"). -->
 :::
 
 #### Reporting
 
 The correct report includes:
 
-* A conclusion about the null hypothesis; followed by
-* the mean (in the text or as M = ...) and the standard error (SE = ...) of the sample.
-* t(degrees of freedom)
-* p = p-value. When working with statistical software, you should report the exact p-value that is displayed. 
-  + in  R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p < 0.001 in your report.
-  <!-- + in  SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
-
-* If you calculate the t-value by hand you would write p < / = / > your chosen $\alpha$-level.
+-   A conclusion about the null hypothesis; followed by
+-   the mean (in the text or as M = ...) and the standard error (SE = ...) of the sample.
+-   t(degrees of freedom)
+-   p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+    -   in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p \< 0.001 in your report. <!-- + in  SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
+-   If you calculate the t-value by hand you would write p \< / = / \> your chosen $\alpha$-level.
 
 ::: callout-tip
 #### Report
 
-✓ The mean fruit consumption of students was 90 (SE = 1.71). This is significantly different from the mean fruit consumption of the whole population (t(33) = -5.83, p < 0.001). 
+✓ The mean fruit consumption of students was 90 (SE = 1.71). This is significantly different from the mean fruit consumption of the whole population (t(33) = -5.83, p \< 0.001).
 :::
 
 Below you find an example of a non-significant result. In this case we test whether the fruit consumption is significantly different from a population value of 92.
@@ -205,7 +207,7 @@ t.test(x = fruit$fruitconsumption,
 ::: callout-tip
 #### Report
 
-✓ The mean fruit consumption of students was 90 (SE = 1.71). This is not significantly different from the mean fruit consumption of the whole population (t(33) = -1.167, p = 0.252). 
+✓ The mean fruit consumption of students was 90 (SE = 1.71). This is not significantly different from the mean fruit consumption of the whole population (t(33) = -1.167, p = 0.252).
 :::
 
 ### Paired samples t-test
@@ -214,9 +216,9 @@ In a paired samples t-test we compare the mean value of two interval-ratio varia
 
 In the below example we test the null hypothesis that the mean difference of the left-right placement of the Liberal party (variable `cps_lr_parties_1`) and the Conservative party (variable `cps19_lr_parties_2`) is equal to 0 in the population.
 
-We can specify the test as follows:[^2]
+We can specify the test as follows:[^analysis_08_t-test-2]
 
-[^2]: In this overview we use the co-called 'formula interface' to t.test. You can also use the so-called traditional interface. For the paired samples t-test example, the equivalent code is:
+[^analysis_08_t-test-2]: In this overview we use the co-called 'formula interface' to t.test. You can also use the so-called traditional interface. For the paired samples t-test example, the equivalent code is:
 
     ```{r}
     t.test(x = canada$cps19_lr_parties_1, 
@@ -285,6 +287,7 @@ t.test(x = canada$cps19_lr_parties_1,
            paired = TRUE,
            conf.level = 0.95)
 ```
+
 <!-- *Example output SPSS (do not include the output directly in an academic paper):* -->
 
 <!-- ![](docs/spss_paired_sample_ttest.png) -->
@@ -292,47 +295,46 @@ t.test(x = canada$cps19_lr_parties_1,
 ::: callout-note
 #### Output explanation
 
-* In R, the output shows:
-  +the mean difference of the observations in the sample (see 'mean difference').
-  +the calculated t-value (see 't = ').
-  +the degrees of freedom (see 'df = ').
-  +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis), see p-value < 2.2e-16. This is a very small number which is why R displays it like this.
-  +the expected value under the null hypothesis (here true mean difference is not equal to 0).
-  +the standard errors of both variables in the sample are obtained separately via `MeanSE()`.
+-   In R, the output shows: +the mean difference of the observations in the sample (see 'mean difference'). +the calculated t-value (see 't = '). +the degrees of freedom (see 'df = '). +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis), see p-value \< 2.2e-16. This is a very small number which is why R displays it like this. +the expected value under the null hypothesis (here true mean difference is not equal to 0). +the standard errors of both variables in the sample are obtained separately via `MeanSE()`.
 
 <!-- In SPSS, the information is presented in two tables. The middle table (Paired Samples Correlations) can be ignored for now. -->
 
 <!-- * In the table 'Paired Samples Statistics', we find -->
+
 <!--   +the means of the variables in the sample (see cells 'Mean'). -->
+
 <!--   +the standard errors (see cells 'Std. Error Mean'). -->
+
 <!-- * In the SPSS table 'Paired Samples Test', we find -->
+
 <!--   +the mean of the paired differences (see cell 'Mean'). -->
+
 <!--   +the standard deviation of the paired differences (see cell 'Std. Deviation'). -->
+
 <!--   +the calculated t-value (see cell 't'). -->
+
 <!--   +the degrees of freedom (see cell 'df'). -->
+
 <!--   +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis. -->
-
 :::
-
 
 #### Reporting
 
 The correct report includes:
 
-* A conclusion about the null hypothesis;
-* the mean (in the text or as M = ...) and the standard error (SE = ...) of each variable.
-* The difference in the means (here -2.637337),
-* the degrees of freedom
-* p = p-value. When working with statistical software, you should report the exact p-value that is displayed. 
-  + in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p < 0.001 in your report.
-  <!-- + in SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
+-   A conclusion about the null hypothesis;
+-   the mean (in the text or as M = ...) and the standard error (SE = ...) of each variable.
+-   The difference in the means (here -2.637337),
+-   the degrees of freedom
+-   p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+    -   in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p \< 0.001 in your report. <!-- + in SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
 
-If you calculate the results by hand you write p < “the chosen α-value”, for example, p < 0.05.
+If you calculate the results by hand you write p \< “the chosen α-value”, for example, p \< 0.05.
 
 ::: callout-tip
 #### Report
 
-✓ The left-right placement of the Liberal party (M = 4.25; SE = 0.017) was lower than the left-right placement of the Conservative party (M = 6.88; SE = 0.017). This difference, -2.64, was statistically significant, t(26718) = -95.406, p < 0.001.
+✓ The left-right placement of the Liberal party (M = 4.25; SE = 0.017) was lower than the left-right placement of the Conservative party (M = 6.88; SE = 0.017). This difference, -2.64, was statistically significant, t(26718) = -95.406, p \< 0.001.
 :::
 
 ### Independent-samples t-test
@@ -410,7 +412,6 @@ The independent samples t-test is used to compare whether the means of two group
 gym <- import("docs/gym.csv")
 ```
 
-
 ```{r, echo=TRUE, include = TRUE}
 library(dplyr)
 
@@ -419,8 +420,8 @@ library(dplyr)
 
 gym %>%                               # Summary by group using dplyr
   group_by(gender) |>  
-  summarize(mean = mean(gym_attendance), na.rm = TRUE,
-            se = MeanSE(gym_attendance), na.rm = TRUE)
+  summarize(mean = mean(gym_attendance, na.rm = TRUE),
+            se = MeanSE(gym_attendance, na.rm = TRUE))
 
 t.test(formula = gym_attendance ~ gender,
        data = gym,
@@ -436,45 +437,45 @@ t.test(formula = gym_attendance ~ gender,
 ::: callout-note
 #### Output explanation
 
-* In R, the output shows:
-  +the means of the variables (see 'sample estimates').
-  +the calculated t-value (see 't = ').
-  +the degrees of freedom (see 'df = ').
-  +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis).
-  +the expected value under the null hypothesis (here true mean difference is not equal to 0).
-  +the mean of both groups is obtained separately via `mean()`.  
-  +the standard errors of both groups in the sample are obtained separately via `MeanSE()`.
+-   In R, the output shows: +the means of the variables (see 'sample estimates'). +the calculated t-value (see 't = '). +the degrees of freedom (see 'df = '). +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis). +the expected value under the null hypothesis (here true mean difference is not equal to 0). +the mean of both groups is obtained separately via `mean()`.\
+    +the standard errors of both groups in the sample are obtained separately via `MeanSE()`.
 
 <!-- In SPSS, the information is presented in two tables.  -->
+
 <!-- * In the table 'Group Statistics', we find -->
+
 <!--   +the means of the variables (see cells 'Mean'). -->
+
 <!--   +the standard errors (see cells 'Std. Error Mean'). -->
+
 <!-- * In the SPSS table 'Independent Samples Test', we find two rows. The recommendation is to ignore Levene’s test in the lower table and always look at the lowest row (‘Equal variances not assumed’) for reporting. This is Welch’s t-test. -->
+
 <!--   +the difference between the group means (see cell 'Mean Difference'). -->
+
 <!--   +the standard deviation of the difference between the group means (see cell 'Std. Deviation Difference'). -->
+
 <!--   +the calculated t-value (see cell 't'). -->
+
 <!--   +the degrees of freedom (see cell 'df'). -->
+
 <!--   +the p-value (i.e. the probability of finding the obtained t-value, given the null hypothesis, see cell 'Sig. (2-tailed)') -->
-
 :::
-
 
 #### Reporting
 
 The correct report includes:
 
-* A conclusion about the null hypothesis;
-* the mean (in the text or as M = ...) and the standard error (SE = ...) of each variable,
-* The difference in means (here 0.972),
-* the degrees of freedom,
-* p = p-value. When working with statistical software, you should report the exact p-value that is displayed. 
-  + in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p < 0.001 in your report.
-  <!-- + in SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
+-   A conclusion about the null hypothesis;
+-   the mean (in the text or as M = ...) and the standard error (SE = ...) of each variable,
+-   The difference in means (here 0.972),
+-   the degrees of freedom,
+-   p = p-value. When working with statistical software, you should report the exact p-value that is displayed.
+    -   in R, small values may be displayed using the scientific notation (e.g. 2.2e-16 is the scientific notation of 0.00000000000000022.) This means that the value is very close to zero. R uses this notation automatically for very small numbers. In these cases, write p \< 0.001 in your report. <!-- + in SPSS, very small p-values may be displayed as p=0.000. However, never write p=0.000 in your report. This is simply the way SPSS displays very small p-values < 0.0005. In these cases, write p < 0.001 in your report. -->
 
 ::: callout-tip
 #### Report
 
-✓ The number of gym attendances of men last month (M = 3.97; SE = 0.063) was higher than the number of gym attendances of women last month (M = 3.00; SE = 0.054). This difference, 0.972, was statistically significant, t(1944.363) = 11.674, p < 0.001.
+✓ The number of gym attendances of men last month (M = 3.97; SE = 0.063) was higher than the number of gym attendances of women last month (M = 3.00; SE = 0.054). This difference, 0.972, was statistically significant, t(1944.363) = 11.674, p \< 0.001.
 :::
 
 ## Effect sizes for t-tests
@@ -569,7 +570,6 @@ Cohen's d, or standardized mean difference, is one of the most common ways to me
 
 ```
 
-
 ```{r, echo=TRUE, include =TRUE, warning = FALSE}
 MeanSE(fruit$fruitconsumption, na.rm = TRUE)
 
@@ -589,13 +589,16 @@ cohens_d(fruitconsumption ~ 1,
 <!-- ![](docs/spss_effect_ttest.png) -->
 
 <!-- ::: callout-note -->
+
 <!-- #### Output explanation -->
 
 <!-- In SPSS, the value for Cohen's d is shown in the cell 'Point Estimate'. -->
+
 <!-- ::: -->
 
 ::: callout-warning
 #### Interpretation
+
 The Cohen's d value range is from -∞ to +∞ and values can therefore be negative. If d is negative, it simply means that the group mean of the sample (or in the case of the paired/independent sample t-test the first group) is lower than the group of mean of population (or in the case of the paired/independent sample t-test the second group).
 
 A Cohen's d of 1 means that the difference between the sample mean and hypothesized population mean is 1 standard deviation. A Cohen's d of 0.5 means that the difference between the sample mean and hypothesized mean is 0.5 standard deviations (half a standard deviation).
@@ -621,7 +624,6 @@ If you have calculated Cohen’s d for a t-test, you can add it to the report:
 ✓ The mean fruit consumption of students was 90 (SE = 1.71). This is not significantly different from the mean fruit consumption of the whole population (t(33) = -1.167, p = 0.252). This represents a large difference, d = -1.00.
 :::
 
-
 #### Hedges' $g^*_s$ for independent samples
 
 Cohen's d and Hedges $g^*_s$ are largely comparable, but Hedges modification is considered more robust for small samples.
@@ -631,7 +633,6 @@ Cohen's d and Hedges $g^*_s$ are largely comparable, but Hedges modification is 
 ```{r, echo=FALSE, include =FALSE}
 
 ```
-
 
 ```{r, echo=TRUE, include =TRUE, warning = FALSE}
 MeanSE(fruit$fruitconsumption, na.rm = TRUE)
@@ -652,8 +653,11 @@ hedges_g(fruitconsumption ~ 1,
 <!-- ![](docs/spss_effect_ttest.png) -->
 
 <!-- ::: callout-note -->
+
 <!-- #### Output explanation -->
+
 <!-- In SPSS, the value for Hedges' $g_s^*$ is shown in the cell 'Point Estimate'. -->
+
 <!-- ::: -->
 
 ::: callout-warning
